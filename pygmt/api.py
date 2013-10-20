@@ -43,15 +43,15 @@ class GMT_Session:
         GMT_Create_Session.restype = GMT_Pointer
 
         #create the session
-        self._session = GMT_Create_Session(name, 2, 0, None)
+        self.session_ptr = GMT_Create_Session(name, 2, 0, None)
         self.session_name = name
         
-        if self._session == None:
+        if self.session_ptr == None:
             raise GMT_Error("Couldn't create session")
  
     def __del__(self):
         #clean up the session
-        ret = libgmt.GMT_Destroy_Session(self._session) 
+        ret = libgmt.GMT_Destroy_Session(self.session_ptr) 
   
         if ret == 1:
             raise GMT_Error("Couldn't destroy session:")
@@ -68,7 +68,7 @@ class GMT_Session:
         raise GMT_Error("Don't understand the wesn argument")
 
     def register_io(self, family, method, geometry, direction, wesn, ptr):
-        id = libgmt.GMT_Register_IO(self._session, family, method, geometry,\
+        id = libgmt.GMT_Register_IO(self.session_ptr, family, method, geometry,\
                                     direction, self._c_wesn(wesn), ptr)
        
         if id == -1:
@@ -77,7 +77,7 @@ class GMT_Session:
 
     def encode_id(self, id):
         filename = ctypes.create_string_buffer(16) #need at least 16 bytes for the id string
-        ret = libgmt.GMT_Encode_ID(self._session, filename, id)
+        ret = libgmt.GMT_Encode_ID(self.session_ptr, filename, id)
  
         if ret == 1:
             raise GMT_Error("Invalid ID for encoding")
@@ -87,14 +87,14 @@ class GMT_Session:
         GMT_Retrieve_Data = libgmt.GMT_Retrieve_Data
         GMT_Retrieve_Data.restype = GMT_Pointer
         
-        ptr = GMT_Retrieve_Data(self._session, id)
+        ptr = GMT_Retrieve_Data(self.session_ptr, id)
 
         if ptr == None:
             raise GMT_Error("Couldn't retrieve data")
         return ptr 
 
     def read_data(self, family, method, geometry, mode, wesn, input, ptr=None):
-        data = libgmt.GMT_Read_Data(self._session, family, method, geometry, \
+        data = libgmt.GMT_Read_Data(self.session_ptr, family, method, geometry, \
                                    mode, self._c_wesn(wesn), input, ptr)
         
         if data == None:
@@ -102,17 +102,17 @@ class GMT_Session:
         return data
 
     def write_data(self, family, method, geometry, mode, wesn, output, data):
-        ret = libgmt.GMT_Write_Data(self._session, family, method, geometry,\
+        ret = libgmt.GMT_Write_Data(self.session_ptr, family, method, geometry,\
                                     mode, self._c_wesn(wesn), output, data)
 
     def call_module(self, module, args, mode=module_mode['cmd']):
-        ret = libgmt.GMT_Call_Module(self._session, module, mode, args)
+        ret = libgmt.GMT_Call_Module(self.session_ptr, module, mode, args)
   
         if ret == -1:
             raise GMT_Error("Problem calling module " + str(module))
    
     def option(self, options):
-        ret = libgmt.GMT_Option(self._session, options)
+        ret = libgmt.GMT_Option(self.session_ptr, options)
 
         
 
