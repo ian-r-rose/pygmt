@@ -61,6 +61,37 @@ class GMT_Figure:
         module_options = ' '.join([self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
         self._gmt_session.call_module('psclip', module_options)
 
+    def pscontour(self,options):
+        '''
+        Call the GMT pscontour module with the text string "options"
+        '''
+        module_options = ' '.join([self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+        self._gmt_session.call_module('pscontour', module_options)
+
+    def psmask(self,options):
+        '''
+        Call the GMT psmask module with the text string "options"
+        '''
+        module_options = ' '.join([self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+        self._gmt_session.call_module('psmask', module_options)
+
+    def pstext(self,options):
+        '''
+        Call the GMT pstext module with the text string "options"
+        '''
+        module_options = ' '.join([self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+        self._gmt_session.call_module('pstext', module_options)
+
+    def pswiggle(self,options):
+        '''
+        Call the GMT pswiggle module with the text string "options"
+        '''
+        module_options = ' '.join([self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+        self._gmt_session.call_module('pswiggle', module_options)
+
+
+
+
 
 if __name__ == "__main__":
     fig = GMT_Figure("output.ps", range='g', projection='H7i')
