@@ -4,7 +4,7 @@ from flags import *
 
 class GMT_Figure:
  
-    def __init__(self, ps_file, range, projection):
+    def __init__(self, ps_file, range, projection, verbose=False):
         '''
         Initialize a GMT figure.  Sets up the GMT session,
         gets the range and projection types, and writes the
@@ -24,6 +24,9 @@ class GMT_Figure:
         open_options = ' '.join([self.proj_opt, self.range_opt, '-T -K ->%s'%self.ps_file])
         self._gmt_session.call_module('psxy',  open_options)
 
+        #whether to output the GMT calls
+        self.verbose = verbose
+
     def close(self):
         '''
         Close out the figure.  Writes the postscript trailer
@@ -33,11 +36,19 @@ class GMT_Figure:
         close_options = ' '.join([self.proj_opt, self.range_opt, '-T -O', self.ps_output])
         self._gmt_session.call_module('psxy', close_options)
 
+    def _print_call(self, str):
+        '''
+        Debug output for printing the options given to GMT modules
+        '''
+        if self.verbose == True:
+            print(str)
+
     def psxy(self, options):
         '''
         Call the GMT psxy module with the text string "options"
         '''
         module_options = ' '.join([self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+        self._print_call('psxy '+module_options)
         self._gmt_session.call_module('psxy', module_options)
  
     def pscoast(self,options):
@@ -45,6 +56,7 @@ class GMT_Figure:
         Call the GMT pscoast module with the text string "options"
         '''
         module_options = ' '.join([self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+        self._print_call('pscoast '+module_options)
         self._gmt_session.call_module('pscoast', module_options)
 
     def psbasemap(self,options):
@@ -52,6 +64,7 @@ class GMT_Figure:
         Call the GMT psbasemap module with the text string "options"
         '''
         module_options = ' '.join([self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+        self._print_call('psbasemap '+module_options)
         self._gmt_session.call_module('psbasemap', module_options)
 
     def psclip(self,options):
@@ -59,6 +72,7 @@ class GMT_Figure:
         Call the GMT psclip module with the text string "options"
         '''
         module_options = ' '.join([self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+        self._print_call('psclip '+module_options)
         self._gmt_session.call_module('psclip', module_options)
 
     def pscontour(self,options):
@@ -66,6 +80,7 @@ class GMT_Figure:
         Call the GMT pscontour module with the text string "options"
         '''
         module_options = ' '.join([self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+        self._print_call('pscontour '+module_options)
         self._gmt_session.call_module('pscontour', module_options)
 
     def psmask(self,options):
@@ -73,6 +88,7 @@ class GMT_Figure:
         Call the GMT psmask module with the text string "options"
         '''
         module_options = ' '.join([self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+        self._print_call('psmask '+module_options)
         self._gmt_session.call_module('psmask', module_options)
 
     def pstext(self,options):
@@ -80,6 +96,7 @@ class GMT_Figure:
         Call the GMT pstext module with the text string "options"
         '''
         module_options = ' '.join([self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+        self._print_call('pstext '+module_options)
         self._gmt_session.call_module('pstext', module_options)
 
     def pswiggle(self,options):
@@ -87,6 +104,7 @@ class GMT_Figure:
         Call the GMT pswiggle module with the text string "options"
         '''
         module_options = ' '.join([self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+        self._print_call('pswiggle '+module_options)
         self._gmt_session.call_module('pswiggle', module_options)
 
 
@@ -94,7 +112,7 @@ class GMT_Figure:
 
 
 if __name__ == "__main__":
-    fig = GMT_Figure("output.ps", range='g', projection='H7i')
+    fig = GMT_Figure("output.ps", range='g', projection='H7i', verbose=True)
     fig.pscoast('-Glightgray -A500')
     fig.psbasemap('-B30g30/15g15') 
     fig.close()
