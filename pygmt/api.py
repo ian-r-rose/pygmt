@@ -114,7 +114,6 @@ class GMT_Session:
     def option(self, options):
         ret = libgmt.GMT_Option(self.session_ptr, options)
 
-        
 
 
 

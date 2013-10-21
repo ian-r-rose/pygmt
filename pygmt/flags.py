@@ -66,3 +66,17 @@ io_freg = { 'add_files_if_none' : 1 ,
             'add_stdio_always'  : 8 ,
             'add_existing'      : 16 ,
             'add_default'       : 6  }
+
+data_types = { 'char'     : 0,
+               'uchar'    : 1,
+               'short'    : 2,
+               'ushort'   : 3,
+               'int'      : 4,
+               'uint'     : 5,
+               'long'     : 6,
+               'ulong'    : 7,
+               'float'    : 8,
+               'double'   : 9,
+               'text'     : 10,
+               'datetime' : 11,
+               'ntypes'   : 12 }
