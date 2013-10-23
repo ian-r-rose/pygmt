@@ -1,4 +1,7 @@
 import api
+import gmt_types
+import ctypes
+import numpy as np
 from flags import *
 
 
@@ -107,12 +110,35 @@ class GMT_Figure:
         self._print_call('pswiggle '+module_options)
         self._gmt_session.call_module('pswiggle', module_options)
 
+    def psxy_test(self,options,vectors):
+        
+        ncols = len(vectors)
+        nrows = len(vectors[0])
+        for v in vectors:
+          assert (len(v) == nrows)
+
+        gmt_vector = gmt_types.gmt_vector_from_array( vectors)
+         
+        id = self._gmt_session.register_io(io_family['dataset'], io_method['reference']+io_approach['via_vector'],\
+                                           io_geometry['surface'], io_direction['in'],\
+                                           None, ctypes.cast(ctypes.byref(gmt_vector), ctypes.c_void_p))
+        id_str = self._gmt_session.encode_id(id)
+
+        module_options = ' '.join([self.proj_opt, self.range_opt, options, self.ko_opt, '-<%s'%(id_str), self.ps_output])
+        self._print_call('psxy '+module_options)
+        self._gmt_session.call_module('psxy', module_options)
+
 
 
 
 
 if __name__ == "__main__":
+    lats = np.linspace(0, 45, 100)
+    lons = np.linspace(0, 100, 100)
+    size = np.ones_like(lons)
+ 
     fig = GMT_Figure("output.ps", range='g', projection='H7i', verbose=True)
     fig.pscoast('-Glightgray -A500')
     fig.psbasemap('-B30g30/15g15') 
+    fig.psxy_test('-Sc', [lons, lats, size])
     fig.close()

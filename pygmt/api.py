@@ -68,7 +68,10 @@ class GMT_Session:
         raise GMT_Error("Don't understand the wesn argument")
 
     def register_io(self, family, method, geometry, direction, wesn, ptr):
-        id = libgmt.GMT_Register_IO(self.session_ptr, family, method, geometry,\
+        GMT_Register_IO = libgmt.GMT_Register_IO
+        GMT_Register_IO.argtypes = [GMT_Pointer, ctypes.c_uint, ctypes.c_uint, ctypes.c_uint,\
+                           ctypes.c_uint, ctypes.POINTER(ctypes.c_double), ctypes.c_void_p]
+        id = GMT_Register_IO(self.session_ptr, family, method, geometry,\
                                     direction, self._c_wesn(wesn), ptr)
        
         if id == -1:

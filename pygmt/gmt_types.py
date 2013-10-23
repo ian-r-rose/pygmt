@@ -1,5 +1,6 @@
 import ctypes
 import flags
+import api
 import numpy as np
 
 class GMT_Univector(ctypes.Union):
@@ -15,28 +16,38 @@ class GMT_Univector(ctypes.Union):
                 ('f8', ctypes.POINTER(ctypes.c_double)) ]
 
 class GMT_Vector(ctypes.Structure):
-    _fields_ = [ ('n_columns', ctypes.c_ulonglong),
-                 ('n_rows', ctypes.c_ulonglong),
+    _fields_ = [ ('n_columns', ctypes.c_ulong),
+                 ('n_rows', ctypes.c_ulong),
                  ('type' , ctypes.POINTER(ctypes.c_uint)),
-                 ('range', ctypes.c_double*2),
-                 ('data', ctypes.c_void_p),
-                 ('id' , ctypes.c_uint),
+                 ('range', ctypes.c_double*2) ,
+                 ('data', ctypes.POINTER(ctypes.c_void_p)),
+    #             ('id' , ctypes.c_uint),
                  ('alloc_mode', ctypes.c_uint), #potential for alignment issues here!
                  ('alloc_level', ctypes.c_uint) ]
 
-def gmt_vector_from_array( data ):
-    assert(len(data.shape) == 2)
-    d = np.require(data, dtype=np.float64, requirements=['A', 'W', 'O']) 
-    nrows = d.shape[0]
-    ncols = d.shape[1]
+def gmt_vector_from_array( vectors ):
+    ncols = len(vectors)
+    nrows = len(vectors[0])
+    for v in vectors:
+      assert (len(v) == nrows)
 
-    vector = GMT_Vector(ncols, nrows, None, ctypes.c_uint*2, None, 0, 0, 0)
-    vector.types = ctypes.POINTER(ctypes.c_uint)*ncols
-    vector.data = ctypes.c_void_p*ncols
 
-    data_cols = []
+    gmt_vector = GMT_Vector()
+    print ctypes.sizeof(gmt_vector)
+    gmt_vector.n_columns = ncols
+    gmt_vector.n_rows = nrows
+    gmt_vector.range = (ctypes.c_double*2)()
+    type_ptrs = ((ctypes.c_uint)*ncols)()
+    data_ptrs = (ctypes.c_void_p*ncols)()
+
     for i in range(ncols):
-      vector.types[i] = flags.data_types['double']
-      data_cols.append (np.ctypeslib.as_ctypes(d[:,i]))
-      vector.data[i] = data_cols[-1] 
+      type_ptrs[i] = flags.data_types['double']
+      data_ptrs[i] = ctypes.cast(vectors[i].ctypes.data, ctypes.c_void_p)
+    
 
+    gmt_vector.types = ctypes.cast(type_ptrs, ctypes.POINTER(ctypes.c_uint))
+    gmt_vector.data = ctypes.cast(data_ptrs, ctypes.POINTER(ctypes.c_void_p))
+ 
+    return gmt_vector
+
+     
