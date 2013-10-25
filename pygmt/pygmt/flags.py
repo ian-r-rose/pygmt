@@ -8,7 +8,10 @@ io_family = { 'dataset': 0 ,
               'textset': 1 ,
               'grid'   : 2 ,
               'cpt'    : 3 ,
-              'image'  : 4  }
+              'image'  : 4 ,
+              'vector' : 5 ,
+              'matrix' : 6 ,
+              'coord' : 7 }
 
 io_method = { 'file'      : 0 ,
               'stream'    : 1 ,

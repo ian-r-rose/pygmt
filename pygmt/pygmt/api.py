@@ -3,7 +3,7 @@ import ctypes
 
 # import the GMT 5 library.  Must be a shared library.
 # Should have a better way of locating it later
-libgmt = ctypes.CDLL("libgmt.so")
+libgmt = ctypes.CDLL("libgmt.dylib")
 
 class GMT_Pointer(ctypes.c_void_p):
     '''
@@ -69,10 +69,11 @@ class GMT_Session:
 
     def register_io(self, family, method, geometry, direction, wesn, ptr):
         GMT_Register_IO = libgmt.GMT_Register_IO
+        GMT_Register_IO.restype = GMT_Pointer
         GMT_Register_IO.argtypes = [GMT_Pointer, ctypes.c_uint, ctypes.c_uint, ctypes.c_uint,\
                            ctypes.c_uint, ctypes.POINTER(ctypes.c_double), ctypes.c_void_p]
         id = GMT_Register_IO(self.session_ptr, family, method, geometry,\
-                                    direction, self._c_wesn(wesn), ptr)
+                                    direction, wesn, ptr)
        
         if id == -1:
             raise GMT_Error("Couldn't register IO object")
@@ -97,12 +98,22 @@ class GMT_Session:
         return ptr 
 
     def read_data(self, family, method, geometry, mode, wesn, input, ptr=None):
-        data = libgmt.GMT_Read_Data(self.session_ptr, family, method, geometry, \
+        GMT_Read_Data.restype = GMT_Pointer
+        GMT_Read_Data = [GMT_Pointer, ctypes.c_uint, ctypes.c_uint, ctypes.c_uint, ctypes.c_unit,\
+                                                ctypes.POINTER(ctypes.c_double), ctypes.c_ubyte, ctypes.c_void_p]
+        data = GMT_Read_Data(self.session_ptr, family, method, geometry, \
                                    mode, self._c_wesn(wesn), input, ptr)
-        
         if data == None:
             raise GMT_Error("Couldn't read data")
         return data
+    
+    def create_data(self,family,geometry,mode,par,wesn,inc,registration,pad,data_p)
+        GMT_Create_Data=libgmt.GMT_Create_Data
+        GMT_Create_Data.restype = GMT_POINTER
+        GMT_Create_Data.argtypes = [GMT_Pointer, ctypes.c_uint,ctypes.c_uint,ctypes.c_ulonglong,ctypes.POINTER(ctypes.c_double),\
+                                    ctypes.POINTER(ctypes.c_double), ctypes.c_uint,ctypes.C_int,ctypes.c_void_p]
+        new_data_obj = GMT_Create_Data(self.session_ptr,family,geometry, 0, dim, None, None, 0, 0, None)
+        return new_data_obj 
 
     def write_data(self, family, method, geometry, mode, wesn, output, data):
         ret = libgmt.GMT_Write_Data(self.session_ptr, family, method, geometry,\
