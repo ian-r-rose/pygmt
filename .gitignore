@@ -3,3 +3,8 @@
 *.history
 *.ps
 *.gmtcommands
+tests/*.txt
+*.o
+*.so
+*Makefile*
+*makefile*

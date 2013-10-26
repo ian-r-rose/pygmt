@@ -3,7 +3,7 @@ import ctypes
 
 # import the GMT 5 library.  Must be a shared library.
 # Should have a better way of locating it later
-libgmt = ctypes.CDLL("libgmt.dylib")
+libgmt = ctypes.CDLL("libgmt.so")
 
 class GMT_Pointer(ctypes.c_void_p):
     '''
@@ -107,7 +107,7 @@ class GMT_Session:
             raise GMT_Error("Couldn't read data")
         return data
     
-    def create_data(self,family,geometry,mode,par,wesn,inc,registration,pad,data_p)
+    def create_data(self,family,geometry,mode,par,wesn,inc,registration,pad,data_p):
         GMT_Create_Data=libgmt.GMT_Create_Data
         GMT_Create_Data.restype = GMT_POINTER
         GMT_Create_Data.argtypes = [GMT_Pointer, ctypes.c_uint,ctypes.c_uint,ctypes.c_ulonglong,ctypes.POINTER(ctypes.c_double),\

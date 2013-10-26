@@ -1,6 +1,8 @@
 import api
 import gmt_types
 from flags import *
+import numpy as np
+import ctypes
 
 
 class GMT_Figure:
@@ -44,11 +46,46 @@ class GMT_Figure:
         if self.verbose == True:
             print(str)
 
-    def psxy(self, options):
+    def parse_input(self, input):
         '''
-        Call the GMT psxy module with the text string "options"
+        Determine what kind of input has been given to a module,
+        register it, and return the id and id_str to which it corresponds
         '''
-        module_options = ' '.join([self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+
+        #first check if it is a string.  if so, try to open
+        #the file with that 
+        id = -1
+        if isinstance(input, str) == True:
+            id = self._gmt_session.register_io(io_family['dataset'], io_method['file'],\
+                                               io_geometry['point'], io_direction['in'],\
+                                               None, input)
+        #if instead it is a python file object, get the file descriptor
+        #number and open with that
+        elif isinstance(input, file) == True:
+            fd =input.fileno()
+            id = self._gmt_session.register_io(io_family['dataset'], io_method['fdesc'],\
+                                               io_geometry['point'], io_direction['in'],\
+                                               None, ctypes.pointer(ctypes.c_uint(fd)))
+
+        #If it is a list of python vectors, make a GMT_Vector out of it, and register that
+        else:
+            vec = gmt_types.GMT_Vector(input)
+            id = self._gmt_session.register_io(io_family['dataset'], io_method['reference']+io_approach['via_vector'],\
+                                               io_geometry['point'], io_direction['in'],\
+                                               None, vec.ptr)
+            
+        id_str = self._gmt_session.encode_id(id)
+        return id, id_str
+
+
+    def psxy(self, options, input):
+        '''
+        Call the GMT psxy module with the text string "options" and the input "input"
+        options is a text string of the flags to be given to psxy.
+        '''
+        id, id_str = self.parse_input(input)
+        input_opt = '-<'+id_str
+        module_options = ' '.join([input_opt, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
         self._print_call('psxy '+module_options)
         self._gmt_session.call_module('psxy', module_options)
  
@@ -108,26 +145,16 @@ class GMT_Figure:
         self._print_call('pswiggle '+module_options)
         self._gmt_session.call_module('pswiggle', module_options)
 
-    def load_vector(self,vectors):
-        #Definitely not thinking this is permamnent a way.....
-        family=io_family['vector']
-        method=io_method['duplicate']
-        geometry=io_geometry['point']
-        direction=io_direction['in']
-        approach=io_approach['via_vector']
-        wesn=None
-        dim=vectors.size()
-        # should be now be a pointer to a vector in GMT
-        temp_gmt_vec = self._gmt_session.GMT_Create_Data(session_ptr,family,geometry, 0, dim, None, None, 0, 0, None)
-        ###Doesn't exist yet :temp_gmt_vec = self._gmt_session.Populate_vector(self._gmt_session,temp_gmt_vec,vectors)
-        id = self._gmt_session.register_io(self._gmt_session,family,geometry+approach,direction,wesn,temp_gmt_vec)
-        filename = self._gmt_session.encode_id(self._gmt_session, id )
-        d_ptr = self._gmt_session.retrieve_data(self._gmt_session, id )
-        data = self._gmt_session.read_data(self._gmt_session, family, method, geometry, mode, wesn, input=ptr, ptr=None)
-        return data
+
 
 if __name__ == "__main__":
+    lats = np.linspace(0,45, 100)
+    lons = np.linspace(0,45, 100)
+    size = np.linspace(0.1,0.3, 100)
+
     fig = GMT_Figure("output.ps", range='g', projection='H7i', verbose=True)
     fig.pscoast('-Glightgray -A500')
     fig.psbasemap('-B30g30/15g15') 
+    fig.psxy('-Sc', [lons,lats,size])
+
     fig.close()
