@@ -17,7 +17,7 @@ fig.psbasemap('-B30g30/15g15')
 lons_prime = lons+50
 fig.psxy('-Sci', pygmt.GMT_Vector([lons_prime,lats,size]))
 lons_prime = lons+200
-#fig.pswiggle('-Gblack -Z10c', pygmt.GMT_Vector([lons,lats,size]))
+fig.pswiggle('-W -Z1c', pygmt.GMT_Vector([lons_prime,lats,size]))
 
 #second, pass a text string indicating a file
 np.savetxt("test.txt", zip(lons+100,lats,size))

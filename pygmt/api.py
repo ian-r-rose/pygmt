@@ -34,11 +34,11 @@ class GMT_Session:
  
     def __del__(self):
         #clean up the session
-        ret = libgmt.GMT_Destroy_Session(self.session_ptr) 
+#        ret = libgmt.GMT_Destroy_Session(self.session_ptr) 
   
-        if ret == 1:
-            raise GMT_Error("Couldn't destroy session:")
-#        pass
+#        if ret == 1:
+#            raise GMT_Error("Couldn't destroy session:")
+        pass
 
     def _c_wesn(self, wesn):
         

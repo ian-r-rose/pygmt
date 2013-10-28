@@ -160,8 +160,9 @@ if __name__ == "__main__":
     fig = GMT_Figure("output.ps", range='g', projection='H7i', verbose=True)
     fig.pscoast('-Glightgray -A500')
     fig.psbasemap('-B30g30/15g15') 
-#    fig.pswiggle('-W -Z10c', gmt_types.GMT_Vector([lons+100,lats,size]))
+    fig.pswiggle('-Gblack -Z10c', gmt_types.GMT_Vector([lons,lats,size]))
+    fig.pswiggle('-G-red -Z10c', gmt_types.GMT_Vector([lons,lats,size]))
     lons = lons+100
-    fig.psxy('-Sci', gmt_types.GMT_Vector([lons,lats,size]))
+    fig.psxy('', gmt_types.GMT_Vector([lons,lats,size]))
 
     fig.close()
