@@ -46,7 +46,7 @@ class GMT_Figure:
         if self.verbose == True:
             print(str)
 
-    def parse_input(self, input):
+    def register_input(self, input):
         '''
         Determine what kind of input has been given to a module,
         register it, and return the id and id_str to which it corresponds
@@ -67,12 +67,14 @@ class GMT_Figure:
                                                io_geometry['point'], io_direction['in'],\
                                                None, ctypes.pointer(ctypes.c_uint(fd)))
 
-        #If it is a list of python vectors, make a GMT_Vector out of it, and register that
-        else:
-            vec = gmt_types.GMT_Vector(input)
+        #If it is a GMT_vector, register that.
+        elif isinstance(input, gmt_types.GMT_Vector):
             id = self._gmt_session.register_io(io_family['dataset'], io_method['reference']+io_approach['via_vector'],\
                                                io_geometry['point'], io_direction['in'],\
-                                               None, vec.ptr)
+                                               None, input.ptr)
+
+        else:
+            raise api.GMT_Error("Unsupported input type") 
             
         id_str = self._gmt_session.encode_id(id)
         return id, id_str
@@ -83,7 +85,7 @@ class GMT_Figure:
         Call the GMT psxy module with the text string "options" and the input "input"
         options is a text string of the flags to be given to psxy.
         '''
-        id, id_str = self.parse_input(input)
+        id, id_str = self.register_input(input)
         input_opt = '-<'+id_str
         module_options = ' '.join([input_opt, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
         self._print_call('psxy '+module_options)
@@ -137,11 +139,13 @@ class GMT_Figure:
         self._print_call('pstext '+module_options)
         self._gmt_session.call_module('pstext', module_options)
 
-    def pswiggle(self,options):
+    def pswiggle(self,options,input):
         '''
         Call the GMT pswiggle module with the text string "options"
         '''
-        module_options = ' '.join([self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+        id, id_str = self.register_input(input)
+        input_opt = '-<'+id_str
+        module_options = ' '.join([input_opt, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
         self._print_call('pswiggle '+module_options)
         self._gmt_session.call_module('pswiggle', module_options)
 
@@ -150,11 +154,14 @@ class GMT_Figure:
 if __name__ == "__main__":
     lats = np.linspace(0,45, 100)
     lons = np.linspace(0,45, 100)
-    size = np.linspace(0.1,0.3, 100)
+    size = np.linspace(0.0,np.pi*10, 100)
+    size = np.sin(size)
 
     fig = GMT_Figure("output.ps", range='g', projection='H7i', verbose=True)
     fig.pscoast('-Glightgray -A500')
     fig.psbasemap('-B30g30/15g15') 
-    fig.psxy('-Sc', [lons,lats,size])
+#    fig.pswiggle('-W -Z10c', gmt_types.GMT_Vector([lons+100,lats,size]))
+    lons = lons+100
+    fig.psxy('-Sci', gmt_types.GMT_Vector([lons,lats,size]))
 
     fig.close()

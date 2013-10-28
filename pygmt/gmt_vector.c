@@ -67,6 +67,7 @@ static PyObject *gmt_vector_from_array_list ( PyObject *self, PyObject *args)
     vector->data = (union GMT_UNIVECTOR *)malloc(sizeof(union GMT_UNIVECTOR)*n_cols);
     vector->n_columns = n_cols;
     vector->n_rows = n_rows;
+    vector->alloc_mode= GMT_ALLOCATED_EXTERNALLY;
 
     //Loop over the columns and point each data pointer to the data
     //in the numpy array. 

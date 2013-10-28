@@ -55,6 +55,7 @@ class GMT_Session:
   
         if ret == 1:
             raise GMT_Error("Couldn't destroy session:")
+#        pass
 
     def _c_wesn(self, wesn):
         
