@@ -96,6 +96,7 @@ static PyObject *free_gmt_vector ( PyObject *self, PyObject *args)
     vector = (struct GMT_VECTOR *)PyLong_AsVoidPtr(ref);
     free(vector->type);
     free(vector->data);
+    free(vector);
 
     return Py_None;
 }
