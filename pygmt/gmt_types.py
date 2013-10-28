@@ -28,6 +28,12 @@ class GMT_Vector:
     a GMT_VECTOR which GMT knows how to read.
     '''
     def __init__(self, arrays):
+        if not isinstance(arrays, list):
+            raise GMT_Error("Must pass in a list of arrays to GMT_Vector")
+        for a in arrays:
+            if isinstance(a, np.ndarray) == False or a.ndim != 1:
+                raise GMT_Error("Arrays must be one-dimensional")
+
         self.ptr = ctypes.c_void_p(_gmt_vector.gmt_vector_from_array_list(arrays))
 
     def __del__(self):
