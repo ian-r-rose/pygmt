@@ -74,7 +74,7 @@ class GMT_Figure:
                                                None, input.ptr)
 
         else:
-            raise api.GMT_Error("Unsupported input type") 
+            raise gmt_types.GMT_Error("Unsupported input type") 
             
         id_str = self._gmt_session.encode_id(id)
         return id, id_str
