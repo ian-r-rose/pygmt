@@ -75,7 +75,6 @@ class GMT_Session:
         GMT_Retrieve_Data = libgmt.GMT_Retrieve_Data
         GMT_Retrieve_Data.restype = GMT_Pointer
         GMT_Retrieve_Data.argtypes = [GMT_Pointer, ctypes.c_uint] 
-        print idnum
         
         ptr = GMT_Retrieve_Data(self.session_ptr, idnum)
 

@@ -8,3 +8,6 @@ tests/*.txt
 *.so
 *Makefile*
 *makefile*
+*.grd
+*.nc
+*.cpt
