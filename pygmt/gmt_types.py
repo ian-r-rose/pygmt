@@ -24,20 +24,43 @@ class GMT_Error(Exception):
 class GMT_Vector:
     '''
     Class for storing GMT_VECTOR objects.  In the initializer
-    you give it a list of 1D numpy arrays.  It then constructs
+    you give it a list of 1D or 2D numpy arrays.  It then constructs
     a GMT_VECTOR which GMT knows how to read.
     '''
     def __init__(self, arrays):
+        tmp_arrays = []
         if not isinstance(arrays, list):
             raise GMT_Error("Must pass in a list of arrays to GMT_Vector")
         for a in arrays:
-            if isinstance(a, np.ndarray) == False or a.ndim != 1:
-                raise GMT_Error("Arrays must be one-dimensional")
+            if a.shape != arrays[0].shape:
+                raise GMT_Error("Arrays must be of the same shape")
+            if a.ndim != 1 and a.ndim != 2:
+                raise GMT_Error("Arrays must be 1 or 2 dimensional")
 
-        self.ptr = ctypes.c_void_p(_gmt_vector.gmt_vector_from_array_list(arrays))
+            if a.ndim == 2:
+                tmp_arrays.append( a.flatten() )
+
+        if not tmp_arrays:
+            self.ptr = ctypes.c_void_p(_gmt_vector.gmt_vector_from_array_list(arrays))
+        else:
+            self.ptr = ctypes.c_void_p(_gmt_vector.gmt_vector_from_array_list(tmp_arrays))
+           
 
     def __del__(self):
         _gmt_vector.free_gmt_vector(long(self.ptr.value))
 
 
-   
+class GMT_Matrix:
+    '''
+    Class for storing GMT_MATRIX objects.  In the initializer
+    '''
+    def __init__(self, x,y,array):
+        if not isinstance(array, np.ndarray):
+            raise GMT_Error("Must pass in a numpy matrix to GMT_Matrix")
+
+        self.ptr = ctypes.c_void_p(_gmt_vector.gmt_matrix_from_array(array, (np.amin(x),np.amax(x),np.amin(y),np.amax(y),0,0)))
+
+    def __del__(self):
+        _gmt_vector.free_gmt_matrix(long(self.ptr.value))
+
+

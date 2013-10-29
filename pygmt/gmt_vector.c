@@ -22,11 +22,15 @@
 static PyObject *gmt_vector_from_array_list ( PyObject *self, PyObject *args);
 static PyObject *free_gmt_vector ( PyObject *self, PyObject *args);
 
+static PyObject *gmt_matrix_from_array ( PyObject *self, PyObject *args);
+static PyObject *free_gmt_matrix ( PyObject *self, PyObject *args);
 
 
 static PyMethodDef _gmt_vectorMethods[] = {
     {"gmt_vector_from_array_list", gmt_vector_from_array_list, METH_VARARGS},
     {"free_gmt_vector", free_gmt_vector, METH_VARARGS},
+    {"gmt_matrix_from_array", gmt_matrix_from_array, METH_VARARGS},
+    {"free_gmt_matrix", free_gmt_vector, METH_VARARGS},
     {NULL, NULL}
 };
 
@@ -43,8 +47,8 @@ void init_gmt_vector()
 //instead this should be done in a light python wrapper of this function
 static PyObject *gmt_vector_from_array_list ( PyObject *self, PyObject *args)
 {
-    unsigned int n_cols;
-    unsigned int n_rows;
+    unsigned long n_cols;
+    unsigned long n_rows;
 
     PyObject* array_list;
     PyArrayObject* array;
@@ -97,6 +101,71 @@ static PyObject *free_gmt_vector ( PyObject *self, PyObject *args)
     free(vector->type);
     free(vector->data);
     free(vector);
+
+    return Py_None;
+}
+
+
+static PyObject *gmt_matrix_from_array ( PyObject *self, PyObject *args)
+{
+    unsigned long n_cols;
+    unsigned long n_rows;
+
+    double range[6];
+
+    PyArrayObject* array;
+    double *array_data;
+
+    //Parse a list of numpy arrays
+    if (!PyArg_ParseTuple(args, "O!(dddddd)", &PyArray_Type, &array, 
+                          &range[0], &range[1], &range[2], &range[3],
+                          &range[4], &range[5])) return NULL;
+
+    //throw error if the size of the list doesn't make sense
+    n_rows = PyArray_DIMS(array)[0];
+    n_cols = PyArray_DIMS(array)[1];
+    if (n_rows <=0 || n_cols <=0) return NULL;
+
+
+    //Allocate memory for the GMT_MATRIX
+    struct GMT_MATRIX *matrix;
+    matrix = (struct GMT_MATRIX *)malloc(sizeof(struct GMT_MATRIX));
+    matrix->n_columns = n_cols;
+    matrix->n_rows = n_rows;
+    matrix->alloc_mode= GMT_ALLOCATED_EXTERNALLY;
+    matrix->shape = 0; 
+    matrix->size = sizeof(double)*n_rows*n_cols; 
+    matrix->n_layers = 1.0;
+
+    array_data = (double *)PyArray_DATA(array);
+
+    matrix->type = (enum GMT_enum_type)GMT_DOUBLE;
+    matrix->data = (union GMT_UNIVECTOR)array_data;
+    for (unsigned int i=0; i<6; ++i)
+        matrix->range[i] = range[i];
+
+//    for (unsigned int i=0; i<n_rows*n_cols; ++i)
+//        printf("%lf\n", matrix->data.f8[i]);
+//    printf("%lf, %lf, %lf, %lf\n", matrix->range[0], matrix->range[1], matrix->range[2], matrix->range[3]);
+
+//    printf("%i, %i\n", n_rows, n_cols);
+
+    //Return a pointer of sorts (actually a Python Long, which
+    //should be cast to a ctypes.c_void_p in python
+    return Py_BuildValue("O", PyLong_FromVoidPtr( (void *)matrix));
+} 
+
+//Free the memory allocated for a GMT_Vector.
+//Does not free the numpy array to which it points
+static PyObject *free_gmt_matrix ( PyObject *self, PyObject *args)
+{
+    struct GMT_MATRIX *matrix;
+    PyObject *ref;
+
+    if (!PyArg_ParseTuple(args, "O!", &PyLong_Type, &ref)) return NULL;
+
+    matrix = (struct GMT_MATRIX *)PyLong_AsVoidPtr(ref);
+    free(matrix);
 
     return Py_None;
 }
