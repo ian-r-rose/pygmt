@@ -76,7 +76,7 @@ class GMT_Figure_base:
                                                None, input.ptr)
         #if it is a GMT_grd
         elif isinstance(input, gmt_types.GMT_Grid):
-            id_num = input.id_num
+            raise gmt_types.GMT_Error("This module does not support input of type GMT_Grid")
 
         else:
             raise gmt_types.GMT_Error("Unsupported input type") 
