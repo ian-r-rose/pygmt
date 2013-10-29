@@ -69,7 +69,7 @@ class GMT_Figure(GMT_Figure_base):
         Call the GMT psxy module with the text string "options" and the input "input"
         options is a text string of the flags to be given to psxy.
         '''
-        id, id_str = self._register_input(input)
+        id_num, id_str = self._register_input(input)
         input_opt = '-<'+id_str
         module_options = ' '.join([input_opt, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
         self._print_call('psxy '+module_options)
@@ -79,7 +79,7 @@ class GMT_Figure(GMT_Figure_base):
         '''
         Call the GMT psclip module with the text string "options"
         '''
-        id, id_str = self._register_input(input)
+        id_num, id_str = self._register_input(input)
         input_opt = '-<'+id_str
         module_options = ' '.join([input_opt, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
         self._print_call('psclip '+module_options)
@@ -89,7 +89,7 @@ class GMT_Figure(GMT_Figure_base):
         '''
         Call the GMT pscontour module with the text string "options"
         '''
-        id, id_str = self._register_input(input)
+        id_num, id_str = self._register_input(input)
         input_opt = '-<'+id_str
         module_options = ' '.join([input_opt, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
         self._print_call('pscontour '+module_options)
@@ -99,7 +99,7 @@ class GMT_Figure(GMT_Figure_base):
         '''
         Call the GMT psmask module with the text string "options"
         '''
-        id, id_str = self._register_input(input)
+        id_num, id_str = self._register_input(input)
         input_opt = '-<'+id_str
         module_options = ' '.join([input_opt, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
         self._print_call('psmask '+module_options)
@@ -109,7 +109,7 @@ class GMT_Figure(GMT_Figure_base):
         '''
         Call the GMT pswiggle module with the text string "options"
         '''
-        id, id_str = self._register_input(input)
+        id_num, id_str = self._register_input(input)
         input_opt = '-<'+id_str
         module_options = ' '.join([input_opt, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
         self._print_call('pswiggle '+module_options)

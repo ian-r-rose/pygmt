@@ -56,27 +56,27 @@ class GMT_Session:
         GMT_Register_IO.restype = int
         GMT_Register_IO.argtypes = [GMT_Pointer, ctypes.c_uint, ctypes.c_uint, ctypes.c_uint,\
                            ctypes.c_uint, ctypes.POINTER(ctypes.c_double), ctypes.c_void_p]
-        id = GMT_Register_IO(self.session_ptr, family, method, geometry,\
+        id_num = GMT_Register_IO(self.session_ptr, family, method, geometry,\
                                     direction, wesn, ptr)
        
-        if id == -1:
+        if id_num == -1:
             raise GMT_Error("Couldn't register IO object")
-        return id
+        return id_num
 
-    def encode_id(self, id):
+    def encode_id(self, id_num):
         filename = ctypes.create_string_buffer(16) #need at least 16 bytes for the id string
-        ret = libgmt.GMT_Encode_ID(self.session_ptr, filename, id)
+        ret = libgmt.GMT_Encode_ID(self.session_ptr, filename, id_num)
  
         if ret == 1:
             raise GMT_Error("Invalid ID for encoding")
         return filename.value
 
-    def retrieve_data(self, idnum):
+    def retrieve_data(self, id_num):
         GMT_Retrieve_Data = libgmt.GMT_Retrieve_Data
         GMT_Retrieve_Data.restype = GMT_Pointer
         GMT_Retrieve_Data.argtypes = [GMT_Pointer, ctypes.c_uint] 
         
-        ptr = GMT_Retrieve_Data(self.session_ptr, idnum)
+        ptr = GMT_Retrieve_Data(self.session_ptr, id_num)
 
         if ptr == None:
             raise GMT_Error("Couldn't retrieve data")

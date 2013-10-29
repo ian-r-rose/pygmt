@@ -7,7 +7,7 @@ import ctypes
 
 class GMT_Figure_base:
  
-    def __init__(self, ps_file, range, projection, verbose=False):
+    def __init__(self, ps_file, figure_range, projection, verbose=False):
         '''
         Initialize a GMT figure.  Sets up the GMT session,
         gets the range and projection types, and writes the
@@ -20,7 +20,7 @@ class GMT_Figure_base:
         self.ps_file = ps_file
         self.ps_output = '->>'+ps_file
         self.ko_opt = '-O -K'
-        self.range_opt = '-R'+range
+        self.range_opt = '-R'+figure_range
         self.proj_opt = '-J'+projection
 
         #dummy call to psxy to write the header of the postscript file
@@ -51,38 +51,38 @@ class GMT_Figure_base:
     def _register_input(self, input):
         '''
         Determine what kind of input has been given to a module,
-        register it, and return the id and id_str to which it corresponds
+        register it, and return the id_num and id_str to which it corresponds
         '''
 
         #first check if it is a string.  if so, try to open
         #the file with that 
-        id = -1
+        id_num = -1
         if isinstance(input, str) == True:
-            id = self._gmt_session.register_io(io_family['dataset'], io_method['file'],\
+            id_num = self._gmt_session.register_io(io_family['dataset'], io_method['file'],\
                                                io_geometry['point'], io_direction['in'],\
                                                None, input)
         #if instead it is a python file object, get the file descriptor
         #number and open with that
         elif isinstance(input, file) == True:
             fd =input.fileno()
-            id = self._gmt_session.register_io(io_family['dataset'], io_method['fdesc'],\
+            id_num = self._gmt_session.register_io(io_family['dataset'], io_method['fdesc'],\
                                                io_geometry['point'], io_direction['in'],\
                                                None, ctypes.pointer(ctypes.c_uint(fd)))
 
         #If it is a GMT_vector, register that.
         elif isinstance(input, gmt_types.GMT_Vector):
-            id = self._gmt_session.register_io(io_family['dataset'], io_method['reference']+io_approach['via_vector'],\
+            id_num = self._gmt_session.register_io(io_family['dataset'], io_method['reference']+io_approach['via_vector'],\
                                                io_geometry['point'], io_direction['in'],\
                                                None, input.ptr)
         #if it is a GMT_grd
         elif isinstance(input, gmt_types.GMT_Grid):
-            id = input.id_num
+            id_num = input.id_num
 
         else:
             raise gmt_types.GMT_Error("Unsupported input type") 
             
-        id_str = self._gmt_session.encode_id(id)
-        return id, id_str
+        id_str = self._gmt_session.encode_id(id_num)
+        return id_num, id_str
 
     def _grid_data(self, module, options, input):
         

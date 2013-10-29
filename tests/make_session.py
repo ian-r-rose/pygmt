@@ -1,6 +1,6 @@
 import sys,os
 sys.path.insert(1,os.path.abspath('..'))
-import pygmt
+import pygmt.api
 
-session = pygmt.GMT_Session("My groovy session")
+session = pygmt.api.GMT_Session("My groovy session")
 session.option("R,J")
