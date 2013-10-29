@@ -22,11 +22,12 @@ io_method = { 'file'      : 0 ,
 io_approach = { 'via_vector' : 100 ,
                 'via_matrix' : 200  }
 
-io_geometry = { 'text'   : 0 ,
-                'point'  : 1 ,
-                'line'   : 2 ,
-                'polygon': 3 ,
-                'surface': 4  }
+io_geometry = { 'point'   : 1 ,
+                'line'    : 2 ,
+                'polygon' : 4 ,
+                'plp'     : 7 ,
+                'surface' : 8 ,
+                'none'    : 16 }
 
 io_index = { 'xlo' : 0 ,
              'xhi' : 1 ,

@@ -19,7 +19,7 @@ class GMT_Figure:
         #set some universal GMT flags for this figure
         self.ps_file = ps_file
         self.ps_output = '->>'+ps_file
-        self.ko_opt = '-O -K'
+        self.ko_opt = '-O -K -V'
         self.range_opt = '-R'+range
         self.proj_opt = '-J'+projection
 
@@ -46,7 +46,7 @@ class GMT_Figure:
         if self.verbose == True:
             print(str)
 
-    def register_input(self, input):
+    def _register_input(self, input):
         '''
         Determine what kind of input has been given to a module,
         register it, and return the id and id_str to which it corresponds
@@ -72,6 +72,9 @@ class GMT_Figure:
             id = self._gmt_session.register_io(io_family['dataset'], io_method['reference']+io_approach['via_vector'],\
                                                io_geometry['point'], io_direction['in'],\
                                                None, input.ptr)
+        #if it is a GMT_grd
+        elif isinstance(input, gmt_types.GMT_Grid):
+            id = input.id_num
 
         else:
             raise gmt_types.GMT_Error("Unsupported input type") 
@@ -79,13 +82,41 @@ class GMT_Figure:
         id_str = self._gmt_session.encode_id(id)
         return id, id_str
 
+    def _grid_data(self, module, options, input):
+        
+        #first register the input
+        in_id, in_str = self._register_input(input)
+
+        #register the output direction for the memory location of the gridded data
+        out_id = self._gmt_session.register_io(io_family['grid'], io_method['reference'],\
+                                               io_geometry['surface'], io_direction['out'], None, None)
+        out_str = self._gmt_session.encode_id(out_id)
+
+        #do the module call, either surface or xyz2grd
+        grid_opts = ' '.join(['-<'+in_str, '-G'+out_str, options])
+        self._gmt_session.call_module(module, grid_opts)
+
+        #now prepare the gridded data for passing on to other modules
+        data = self._gmt_session.retrieve_data(out_id)
+        grd_id = self._gmt_session.register_io(io_family['grid'], io_method['reference'],\
+                                              io_geometry['surface'], io_direction['in'], None, data)
+        grd_str = self._gmt_session.encode_id(grd_id)
+        
+        grid = gmt_types.GMT_Grid(grd_id,grd_str) 
+        return grid
+ 
+    def xyz2grd(self, options, input):
+        return self._grid_data('xyz2grd', options, input)
+
+    def surface(self, options, input):
+        return self._grid_data('surface', options, input)
 
     def psxy(self, options, input):
         '''
         Call the GMT psxy module with the text string "options" and the input "input"
         options is a text string of the flags to be given to psxy.
         '''
-        id, id_str = self.register_input(input)
+        id, id_str = self._register_input(input)
         input_opt = '-<'+id_str
         module_options = ' '.join([input_opt, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
         self._print_call('psxy '+module_options)
@@ -115,13 +146,34 @@ class GMT_Figure:
         self._print_call('psclip '+module_options)
         self._gmt_session.call_module('psclip', module_options)
 
-    def pscontour(self,options):
+    def pscontour(self,options, input):
         '''
         Call the GMT pscontour module with the text string "options"
         '''
-        module_options = ' '.join([self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+        id, id_str = self._register_input(input)
+        input_opt = '-<'+id_str
+        module_options = ' '.join([input_opt, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
         self._print_call('pscontour '+module_options)
         self._gmt_session.call_module('pscontour', module_options)
+
+    def grdcontour(self,options, grid):
+        '''
+        Call the GMT pscontour module with the text string "options"
+        '''
+        input_opt = '-<'+grid.id_str
+        module_options = ' '.join([input_opt, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+        self._print_call('grdcontour '+module_options)
+        self._gmt_session.call_module('grdcontour', module_options)
+
+    def grdimage(self,options, grid):
+        '''
+        Call the GMT pscontour module with the text string "options"
+        '''
+        input_opt = '-<'+grid.id_str
+        module_options = ' '.join([input_opt, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+        self._print_call('grdimage '+module_options)
+        self._gmt_session.call_module('grdimage', module_options)
+
 
     def psmask(self,options):
         '''
@@ -143,7 +195,7 @@ class GMT_Figure:
         '''
         Call the GMT pswiggle module with the text string "options"
         '''
-        id, id_str = self.register_input(input)
+        id, id_str = self._register_input(input)
         input_opt = '-<'+id_str
         module_options = ' '.join([input_opt, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
         self._print_call('pswiggle '+module_options)
@@ -151,18 +203,3 @@ class GMT_Figure:
 
 
 
-if __name__ == "__main__":
-    lats = np.linspace(0,45, 100)
-    lons = np.linspace(0,45, 100)
-    size = np.linspace(0.0,np.pi*10, 100)
-    size = np.sin(size)
-
-    fig = GMT_Figure("output.ps", range='g', projection='H7i', verbose=True)
-    fig.pscoast('-Glightgray -A500')
-    fig.psbasemap('-B30g30/15g15') 
-    fig.pswiggle('-Gblack -Z10c', gmt_types.GMT_Vector([lons,lats,size]))
-    fig.pswiggle('-G-red -Z10c', gmt_types.GMT_Vector([lons,lats,size]))
-    lons = lons+100
-    fig.psxy('', gmt_types.GMT_Vector([lons,lats,size]))
-
-    fig.close()

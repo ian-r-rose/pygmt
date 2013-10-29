@@ -50,6 +50,17 @@ class GMT_Vector:
         _gmt_vector.free_gmt_vector(long(self.ptr.value))
 
 
+class GMT_Grid:
+    '''
+    Class for storing id information for gridded data, such as would be
+    produced by xyz2grd or surface.  This will be associated with a 
+    particular GMT session, so they should not be mixed and matched.
+    '''
+    def __init__(self, id_num, id_str):
+        self.id_num = id_num
+        self.id_str = id_str
+
+
 class GMT_Matrix:
     '''
     Class for storing GMT_MATRIX objects.  In the initializer
