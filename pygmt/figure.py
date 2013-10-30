@@ -155,6 +155,16 @@ class GMT_Figure(GMT_Figure_base):
         self._gmt_session.call_module('blockmode', module_options)
         return gmt_types.GMT_Dataset(out_id,out_str)
        
+    def triangulate(self, options, input):
+        in_id, in_str = self._register_input(input)
+        input_opt = '-<'+in_str
+        out_id,out_str = self._register_output()
+        output_opt = '->'+out_str
+
+        module_options = ' '.join([input_opt, options, output_opt, '-bo'])
+        self._gmt_session.call_module('triangulate', module_options)
+        return gmt_types.GMT_Dataset(out_id,out_str)
+       
          
 
 
