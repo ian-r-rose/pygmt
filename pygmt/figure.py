@@ -124,3 +124,37 @@ class GMT_Figure(GMT_Figure_base):
         cpt_output = '->'+outfile
         module_options = ' '.join([input_opt, options, cpt_output])
         self._gmt_session.call_module('grd2cpt', module_options)
+
+    def blockmean(self, options, input):
+        in_id, in_str = self._register_input(input)
+        input_opt = '-<'+in_str
+        out_id,out_str = self._register_output()
+        output_opt = '->'+out_str
+
+        module_options = ' '.join([input_opt, options, output_opt, '-bo'])
+        self._gmt_session.call_module('blockmean', module_options)
+        return gmt_types.GMT_Dataset(out_id,out_str)
+         
+    def blockmedian(self, options, input):
+        in_id, in_str = self._register_input(input)
+        input_opt = '-<'+in_str
+        out_id,out_str = self._register_output()
+        output_opt = '->'+out_str
+
+        module_options = ' '.join([input_opt, options, output_opt, '-bo'])
+        self._gmt_session.call_module('blockmedian', module_options)
+        return gmt_types.GMT_Dataset(out_id,out_str)
+       
+    def blockmode(self, options, input):
+        in_id, in_str = self._register_input(input)
+        input_opt = '-<'+in_str
+        out_id,out_str = self._register_output()
+        output_opt = '->'+out_str
+
+        module_options = ' '.join([input_opt, options, output_opt, '-bo'])
+        self._gmt_session.call_module('blockmode', module_options)
+        return gmt_types.GMT_Dataset(out_id,out_str)
+       
+         
+
+

@@ -74,12 +74,61 @@ class GMT_Figure_base:
             id_num = self._gmt_session.register_io(io_family['dataset'], io_method['reference']+io_approach['via_vector'],\
                                                io_geometry['point'], io_direction['in'],\
                                                None, input.ptr)
+
+        #if it is a GMT_dataset, register that
+        elif isinstance(input, gmt_types.GMT_Dataset):
+            data = self._gmt_session.retrieve_data(input.id_num)
+            print data
+            id_num = self._gmt_session.register_io(io_family['dataset'], io_method['reference'],\
+                                               io_geometry['point'], io_direction['in'],\
+                                               None, data)
+
         #if it is a GMT_grd
         elif isinstance(input, gmt_types.GMT_Grid):
             raise gmt_types.GMT_Error("This module does not support input of type GMT_Grid")
 
         else:
             raise gmt_types.GMT_Error("Unsupported input type") 
+            
+        id_str = self._gmt_session.encode_id(id_num)
+        return id_num, id_str
+
+    def _register_output(self, output=None):
+        '''
+        Determine what kind of output for a module to perform.  It may already have
+        specified this via options, in which case this is not necessary.  Where this is
+        used is if we need to store an intermediate dataset, such as the output of blockmean
+        or triangulate, before writing it to disk.  Here we register that output, come
+        up with the id information, and store it in a GMT_Dataset object
+        '''
+
+        id_num = -1
+        if output == None:
+            id_num = self._gmt_session.register_io(io_family['dataset'], io_method['duplicate'],\
+                                               io_geometry['point'], io_direction['out'],\
+                                               None, None)
+        #check if it is a string.  if so, try to open
+        #the file with that 
+        elif isinstance(output, str) == True:
+            id_num = self._gmt_session.register_io(io_family['dataset'], io_method['file'],\
+                                               io_geometry['point'], io_direction['out'],\
+                                               None, output)
+        #if instead it is a python file object, get the file descriptor
+        #number and open with that
+        elif isinstance(output, file) == True:
+            fd =input.fileno()
+            id_num = self._gmt_session.register_io(io_family['dataset'], io_method['fdesc'],\
+                                               io_geometry['point'], io_direction['out'],\
+                                               None, ctypes.pointer(ctypes.c_uint(fd)))
+
+        #If it is a GMT_vector, or GMT_grid, throw an error, as we don't want to write that.
+        elif isinstance(output, gmt_types.GMT_Vector):
+            raise gmt_types.GMT_Error("This module does not support output of type GMT_Vector")
+        elif isinstance(output, gmt_types.GMT_Grid):
+            raise gmt_types.GMT_Error("This module does not support output of type GMT_Grid")
+
+        else:
+            raise gmt_types.GMT_Error("Unsupported output type") 
             
         id_str = self._gmt_session.encode_id(id_num)
         return id_num, id_str

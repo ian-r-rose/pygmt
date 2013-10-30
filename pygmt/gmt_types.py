@@ -60,6 +60,15 @@ class GMT_Grid:
         self.id_num = id_num
         self.id_str = id_str
 
+class GMT_Dataset:
+    '''
+    Class for storing id information for a dataset, such as would be
+    produced by block* or triangulate.  This will be associated with a 
+    particular GMT session, so they should not be mixed and matched.
+    '''
+    def __init__(self, id_num, id_str):
+        self.id_num = id_num
+        self.id_str = id_str
 
 class GMT_Matrix:
     '''
