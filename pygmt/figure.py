@@ -74,7 +74,7 @@ class GMT_Figure(GMT_Figure_base):
         self._print_call('psxy '+module_options)
         self._gmt_session.call_module('psxy', module_options)
 
-    def psclip(self,options):
+    def psclip(self,options, input):
         '''
         Call the GMT psclip module with the text string "options"
         '''
