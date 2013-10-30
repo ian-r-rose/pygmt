@@ -83,7 +83,6 @@ class GMT_Figure_base:
         #if it is a GMT_dataset, register that
         elif isinstance(input, gmt_types.GMT_Dataset):
             data = self._gmt_session.retrieve_data(input.id_num)
-            print data
             id_num = self._gmt_session.register_io(io_family['dataset'], io_method['reference'],\
                                                io_geometry['point'], io_direction['in'],\
                                                None, data)
