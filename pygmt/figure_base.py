@@ -54,13 +54,16 @@ class GMT_Figure_base:
         register it, and return the id_num and id_str to which it corresponds
         '''
 
+        id_num = -1
+        in_str = ""
+
         #first check if it is a string.  if so, try to open
         #the file with that 
-        id_num = -1
         if isinstance(input, str) == True:
             id_num = self._gmt_session.register_io(io_family['dataset'], io_method['file'],\
                                                io_geometry['point'], io_direction['in'],\
                                                None, input)
+            in_str = '-<'+self._gmt_session.encode_id(id_num)
         #if instead it is a python file object, get the file descriptor
         #number and open with that
         elif isinstance(input, file) == True:
@@ -68,12 +71,14 @@ class GMT_Figure_base:
             id_num = self._gmt_session.register_io(io_family['dataset'], io_method['fdesc'],\
                                                io_geometry['point'], io_direction['in'],\
                                                None, ctypes.pointer(ctypes.c_uint(fd)))
+            in_str = '-<'+self._gmt_session.encode_id(id_num)
 
         #If it is a GMT_vector, register that.
         elif isinstance(input, gmt_types.GMT_Vector):
             id_num = self._gmt_session.register_io(io_family['dataset'], io_method['reference']+io_approach['via_vector'],\
                                                io_geometry['point'], io_direction['in'],\
                                                None, input.ptr)
+            in_str = '-<'+self._gmt_session.encode_id(id_num)
 
         #if it is a GMT_dataset, register that
         elif isinstance(input, gmt_types.GMT_Dataset):
@@ -82,6 +87,7 @@ class GMT_Figure_base:
             id_num = self._gmt_session.register_io(io_family['dataset'], io_method['reference'],\
                                                io_geometry['point'], io_direction['in'],\
                                                None, data)
+            in_str = '-<'+self._gmt_session.encode_id(id_num)
 
         #if it is a GMT_grd
         elif isinstance(input, gmt_types.GMT_Grid):
@@ -90,8 +96,7 @@ class GMT_Figure_base:
         else:
             raise gmt_types.GMT_Error("Unsupported input type") 
             
-        id_str = self._gmt_session.encode_id(id_num)
-        return id_num, id_str
+        return id_num, in_str
 
     def _register_output(self, output=None):
         '''
@@ -103,23 +108,30 @@ class GMT_Figure_base:
         '''
 
         id_num = -1
+        out_str = ""
+      
+        #In this case, GMT will handle the output in memory internally
         if output == None:
             id_num = self._gmt_session.register_io(io_family['dataset'], io_method['duplicate'],\
                                                io_geometry['point'], io_direction['out'],\
                                                None, None)
-        #check if it is a string.  if so, try to open
-        #the file with that 
+            #GMT needs to know that this is binary data so it doesn't try to read a header
+            out_str = "-bo ->"+self._gmt_session.encode_id(id_num)
+
+        #check if it is a string.  if so, try to open the file with that 
         elif isinstance(output, str) == True:
             id_num = self._gmt_session.register_io(io_family['dataset'], io_method['file'],\
                                                io_geometry['point'], io_direction['out'],\
                                                None, output)
-        #if instead it is a python file object, get the file descriptor
-        #number and open with that
+            out_str = "->"+self._gmt_session.encode_id(id_num)
+
+        #if instead it is a python file object, get the file descriptor number and open with that
         elif isinstance(output, file) == True:
             fd =input.fileno()
             id_num = self._gmt_session.register_io(io_family['dataset'], io_method['fdesc'],\
                                                io_geometry['point'], io_direction['out'],\
                                                None, ctypes.pointer(ctypes.c_uint(fd)))
+            out_str = "->"+self._gmt_session.encode_id(id_num)
 
         #If it is a GMT_vector, or GMT_grid, throw an error, as we don't want to write that.
         elif isinstance(output, gmt_types.GMT_Vector):
@@ -130,8 +142,7 @@ class GMT_Figure_base:
         else:
             raise gmt_types.GMT_Error("Unsupported output type") 
             
-        id_str = self._gmt_session.encode_id(id_num)
-        return id_num, id_str
+        return id_num, out_str
 
     def _grid_data(self, module, options, input):
         
@@ -144,14 +155,14 @@ class GMT_Figure_base:
         out_str = self._gmt_session.encode_id(out_id)
 
         #do the module call, either surface or xyz2grd
-        grid_opts = ' '.join(['-<'+in_str, '-G'+out_str, options])
+        grid_opts = ' '.join([in_str, '-G'+out_str, options])
         self._gmt_session.call_module(module, grid_opts)
 
         #now prepare the gridded data for passing on to other modules
         data = self._gmt_session.retrieve_data(out_id)
         grd_id = self._gmt_session.register_io(io_family['grid'], io_method['reference'],\
                                               io_geometry['surface'], io_direction['in'], None, data)
-        grd_str = self._gmt_session.encode_id(grd_id)
+        grd_str = '-<'+self._gmt_session.encode_id(grd_id)
         
         grid = gmt_types.GMT_Grid(grd_id,grd_str) 
         return grid

@@ -56,9 +56,9 @@ class GMT_Grid:
     produced by xyz2grd or surface.  This will be associated with a 
     particular GMT session, so they should not be mixed and matched.
     '''
-    def __init__(self, id_num, id_str):
+    def __init__(self, id_num, in_str):
         self.id_num = id_num
-        self.id_str = id_str
+        self.in_str = in_str
 
 class GMT_Dataset:
     '''
@@ -66,9 +66,9 @@ class GMT_Dataset:
     produced by block* or triangulate.  This will be associated with a 
     particular GMT session, so they should not be mixed and matched.
     '''
-    def __init__(self, id_num, id_str):
+    def __init__(self, id_num, in_str):
         self.id_num = id_num
-        self.id_str = id_str
+        self.in_str = in_str
 
 class GMT_Matrix:
     '''

@@ -13,7 +13,8 @@ class GMT_Figure(GMT_Figure_base):
     all the normal GMT modules.
     ''' 
 
-    ### All the GMT modules for creating gridded data
+    ### All the GMT modules for creating, writing, reading, and
+    ### converting gridded data
     def xyz2grd(self, options, input):
         return self._grid_data('xyz2grd', options, input)
 
@@ -21,6 +22,7 @@ class GMT_Figure(GMT_Figure_base):
         return self._grid_data('surface', options, input)
 
     ### All the GMT modules for doing operations on gridded data
+    ### implement some of these!
 
     ### All the GMT modules for plotting things related to gridded data
     def grdcontour(self,options, grid):
@@ -28,8 +30,7 @@ class GMT_Figure(GMT_Figure_base):
         Call the GMT pscontour module with the text string "options"
         '''
         assert( isinstance(grid, gmt_types.GMT_Grid) == True)
-        input_opt = '-<'+grid.id_str
-        module_options = ' '.join([input_opt, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+        module_options = ' '.join([grid.in_str, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
         self._print_call('grdcontour '+module_options)
         self._gmt_session.call_module('grdcontour', module_options)
 
@@ -38,8 +39,7 @@ class GMT_Figure(GMT_Figure_base):
         Call the GMT pscontour module with the text string "options"
         '''
         assert( isinstance(grid, gmt_types.GMT_Grid) == True)
-        input_opt = '-<'+grid.id_str
-        module_options = ' '.join([input_opt, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+        module_options = ' '.join([grid.in_str, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
         self._print_call('grdimage '+module_options)
         self._gmt_session.call_module('grdimage', module_options)
 
@@ -69,9 +69,8 @@ class GMT_Figure(GMT_Figure_base):
         Call the GMT psxy module with the text string "options" and the input "input"
         options is a text string of the flags to be given to psxy.
         '''
-        id_num, id_str = self._register_input(input)
-        input_opt = '-<'+id_str
-        module_options = ' '.join([input_opt, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+        id_num, in_str = self._register_input(input)
+        module_options = ' '.join([in_str, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
         self._print_call('psxy '+module_options)
         self._gmt_session.call_module('psxy', module_options)
 
@@ -79,9 +78,8 @@ class GMT_Figure(GMT_Figure_base):
         '''
         Call the GMT psclip module with the text string "options"
         '''
-        id_num, id_str = self._register_input(input)
-        input_opt = '-<'+id_str
-        module_options = ' '.join([input_opt, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+        id_num, in_str = self._register_input(input)
+        module_options = ' '.join([in_str, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
         self._print_call('psclip '+module_options)
         self._gmt_session.call_module('psclip', module_options)
 
@@ -89,9 +87,8 @@ class GMT_Figure(GMT_Figure_base):
         '''
         Call the GMT pscontour module with the text string "options"
         '''
-        id_num, id_str = self._register_input(input)
-        input_opt = '-<'+id_str
-        module_options = ' '.join([input_opt, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+        id_num, in_str = self._register_input(input)
+        module_options = ' '.join([in_str, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
         self._print_call('pscontour '+module_options)
         self._gmt_session.call_module('pscontour', module_options)
 
@@ -99,9 +96,8 @@ class GMT_Figure(GMT_Figure_base):
         '''
         Call the GMT psmask module with the text string "options"
         '''
-        id_num, id_str = self._register_input(input)
-        input_opt = '-<'+id_str
-        module_options = ' '.join([input_opt, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+        id_num, in_str = self._register_input(input)
+        module_options = ' '.join([in_str, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
         self._print_call('psmask '+module_options)
         self._gmt_session.call_module('psmask', module_options)
 
@@ -109,9 +105,8 @@ class GMT_Figure(GMT_Figure_base):
         '''
         Call the GMT pswiggle module with the text string "options"
         '''
-        id_num, id_str = self._register_input(input)
-        input_opt = '-<'+id_str
-        module_options = ' '.join([input_opt, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+        id_num, in_str = self._register_input(input)
+        module_options = ' '.join([in_str, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
         self._print_call('pswiggle '+module_options)
         self._gmt_session.call_module('pswiggle', module_options)
 
@@ -120,48 +115,39 @@ class GMT_Figure(GMT_Figure_base):
  
     def grd2cpt(self, options, grid, outfile):
         assert( isinstance(grid, gmt_types.GMT_Grid) == True)
-        input_opt = '-<'+grid.id_str
         cpt_output = '->'+outfile
-        module_options = ' '.join([input_opt, options, cpt_output])
+        module_options = ' '.join([grid.in_str, options, cpt_output])
         self._gmt_session.call_module('grd2cpt', module_options)
 
     def blockmean(self, options, input):
         in_id, in_str = self._register_input(input)
-        input_opt = '-<'+in_str
         out_id,out_str = self._register_output()
-        output_opt = '->'+out_str
 
-        module_options = ' '.join([input_opt, options, output_opt, '-bo'])
+        module_options = ' '.join([in_str, options, out_str])
         self._gmt_session.call_module('blockmean', module_options)
         return gmt_types.GMT_Dataset(out_id,out_str)
          
     def blockmedian(self, options, input):
         in_id, in_str = self._register_input(input)
-        input_opt = '-<'+in_str
         out_id,out_str = self._register_output()
-        output_opt = '->'+out_str
 
-        module_options = ' '.join([input_opt, options, output_opt, '-bo'])
+        module_options = ' '.join([in_str, options, out_str])
         self._gmt_session.call_module('blockmedian', module_options)
         return gmt_types.GMT_Dataset(out_id,out_str)
        
     def blockmode(self, options, input):
         in_id, in_str = self._register_input(input)
-        input_opt = '-<'+in_str
         out_id,out_str = self._register_output()
-        output_opt = '->'+out_str
 
-        module_options = ' '.join([input_opt, options, output_opt, '-bo'])
+        module_options = ' '.join([in_str, options, out_str])
         self._gmt_session.call_module('blockmode', module_options)
         return gmt_types.GMT_Dataset(out_id,out_str)
        
     def triangulate(self, options, input):
         in_id, in_str = self._register_input(input)
-        input_opt = '-<'+in_str
         out_id,out_str = self._register_output()
-        output_opt = '->'+out_str
 
-        module_options = ' '.join([input_opt, options, output_opt, '-bo'])
+        module_options = ' '.join([in_str, options, out_str])
         self._gmt_session.call_module('triangulate', module_options)
         return gmt_types.GMT_Dataset(out_id,out_str)
        
