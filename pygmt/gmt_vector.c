@@ -95,16 +95,18 @@ static PyObject *gmt_vector_from_array_list ( PyObject *self, PyObject *args)
 static PyObject *free_gmt_vector ( PyObject *self, PyObject *args)
 {
     struct GMT_VECTOR *vector;
-    PyObject *ref;
+    PyObject* ref;
+    PyObject* array_list;
+    unsigned int n_cols;
 
-    if (!PyArg_ParseTuple(args, "O!", &PyLong_Type, &ref)) return NULL;
+    if (!PyArg_ParseTuple(args, "O!O!", &PyLong_Type, &ref, &PyList_Type, &array_list)) return NULL;
 
+    n_cols = PyList_Size(array_list);
+    if (n_cols <=0) return NULL;
+    for (unsigned int i=0; i<n_cols; i++)
+        Py_DECREF(PyList_GetItem(array_list, i));
+     
     vector = (struct GMT_VECTOR *)PyLong_AsVoidPtr(ref);
-
-    npy_intp* dims = (npy_intp*)malloc(sizeof(npy_intp));
-    dims[0] = vector->n_rows;
-    
-    free(dims);
 
     free(vector->type);
     free(vector->data);

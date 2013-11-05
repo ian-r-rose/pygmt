@@ -226,13 +226,15 @@ class GMT_Vector:
                 tmp_arrays.append( a.flatten() )
 
         if not tmp_arrays:
+            self.array_list = arrays
             self.ptr = ctypes.c_void_p(_gmt_vector.gmt_vector_from_array_list(arrays))
         else:
+            self.array_list = tmp_arrays
             self.ptr = ctypes.c_void_p(_gmt_vector.gmt_vector_from_array_list(tmp_arrays))
            
 
     def __del__(self):
-        _gmt_vector.free_gmt_vector(long(self.ptr.value))
+        _gmt_vector.free_gmt_vector(long(self.ptr.value), self.array_list)
 
 
 class GMT_Matrix:
