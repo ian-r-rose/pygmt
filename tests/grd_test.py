@@ -22,11 +22,11 @@ lats = 90.0-lats*180.0/np.pi
 
 #recover the spherical harmonic with contouring
 fig = pygmt.GMT_Figure("output.ps", figure_range='g', projection='G-75/41/7i', verbose=False)
-dataset = fig.blockmean('-I5/5 -Rg', pygmt.GMT_Vector([lons,lats,vals]))
+dataset = fig.blockmean('-I5/5 -Rg', [lons,lats,vals])
 grid = fig.surface('-I5/5 -Rg', dataset)
 fig.grd2cpt('-Chot', grid, 'pal.cpt')
 fig.grdimage('-Cpal.cpt -E100i', grid)
 fig.grdcontour('-Wthick,black -C0.2', grid)
-fig.psxy('-Sp.1c', pygmt.GMT_Vector([lons,lats,vals]))
+fig.psxy('-Sp.1c', [lons,lats,vals])
 
 fig.close()
