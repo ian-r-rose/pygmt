@@ -82,6 +82,8 @@ static PyObject *gmt_vector_from_array_list ( PyObject *self, PyObject *args)
 
         vector->data[i] = (union GMT_UNIVECTOR)array_data;
         vector->type[i] = (enum GMT_enum_type)GMT_DOUBLE;
+         
+        Py_INCREF( (PyObject*) array);
     }
     //Return a pointer of sorts (actually a Python Long, which
     //should be cast to a ctypes.c_void_p in python
@@ -98,6 +100,12 @@ static PyObject *free_gmt_vector ( PyObject *self, PyObject *args)
     if (!PyArg_ParseTuple(args, "O!", &PyLong_Type, &ref)) return NULL;
 
     vector = (struct GMT_VECTOR *)PyLong_AsVoidPtr(ref);
+
+    npy_intp* dims = (npy_intp*)malloc(sizeof(npy_intp));
+    dims[0] = vector->n_rows;
+    
+    free(dims);
+
     free(vector->type);
     free(vector->data);
     free(vector);

@@ -14,10 +14,8 @@ fig.pscoast('-Glightgray -A500')
 fig.psbasemap('-B30g30/15g15') 
 
 #First, pass the numpy arrays
-lons_prime = lons+50
-fig.psxy('-Sci', pygmt.GMT_Vector([lons_prime,lats,size]))
-lons_prime = lons+200
-fig.pswiggle('-W -Z1c', pygmt.GMT_Vector([lons_prime,lats,size]))
+fig.psxy('-Sci', pygmt.GMT_Vector([lons+50,lats,size]))
+fig.pswiggle('-W -Z1c', [lons+200,lats,size])
 
 #second, pass a text string indicating a file
 np.savetxt("test.txt", zip(lons+100,lats,size))
