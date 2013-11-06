@@ -1,6 +1,5 @@
 import api
 import gmt_types
-import gmt_text
 from flags import *
 import numpy as np
 import ctypes
