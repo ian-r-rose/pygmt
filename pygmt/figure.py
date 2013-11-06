@@ -134,7 +134,14 @@ class GMT_Figure(GMT_Figure_base):
         assert( isinstance(grid, gmt_types.GMT_Grid) == True)
         cpt_output = '->'+outfile
         module_options = ' '.join([grid.in_str, options, cpt_output])
+        self._print_call('grd2cpt '+module_options)
         self._gmt_session.call_module('grd2cpt', module_options)
+
+    def makecpt(self, options, outfile):
+        cpt_output = '->'+outfile
+        module_options = ' '.join([options, cpt_output])
+        self._print_call('makecpt '+module_options)
+        self._gmt_session.call_module('makecpt', module_options)
 
     def blockmean(self, options, input):
         d = gmt_types.GMT_Dataset(self._gmt_session)
