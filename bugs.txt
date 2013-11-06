@@ -1,0 +1,8 @@
+GMT_create_textset() does not set the n_rows field.
+
+In general, creating GMT resources that point to user data is problematic.
+The GMT API tries to free user-allocated memory all the time, causing crashes
+and segmentation faults.  As it is, this means we just need to let memory leak
+instead of cleaning up after ourselves.
+
+
