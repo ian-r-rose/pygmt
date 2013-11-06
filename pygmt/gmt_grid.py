@@ -22,16 +22,16 @@ class GMT_Grid( GMT_Resource ):
             self.in_str = '-<'+self._session.encode_id(self.in_id)
 
         elif isinstance(input, str) == True:
-            self.out_id = self._session.register_io(io_family['grid'], io_method['file'],\
+            self.in_id = self._session.register_io(io_family['grid'], io_method['file'],\
                                                io_geometry['surface'], io_direction['in'], None, input)
-            self.out_str = self._session.encode_id(self.in_id)
+            self.in_str = self._session.encode_id(self.in_id)
 
         elif isinstance(input, file) == True:
             fd =input.fileno()
-            self.out_id = self._session.register_io(io_family['grid'], io_method['fdesc'],\
+            self.in_id = self._session.register_io(io_family['grid'], io_method['fdesc'],\
                                                    io_geometry['surface'], io_direction['out'],\
                                                    None, ctypes.pointer(ctypes.c_uint(fd)))
-            self.out_str = '-<'+self._session.encode_id(self.in_id)
+            self.in_str = '-<'+self._session.encode_id(self.in_id)
 
         else:
             raise GMT_Error("Grid input format not implemented")
