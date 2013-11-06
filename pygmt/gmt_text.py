@@ -31,6 +31,38 @@ class GMT_Text (GMT_Resource):
                                           io_geometry['point'], io_direction['in'],\
                                           None, self.textset.ptr)
             self.in_str = '-<'+self._session.encode_id(self.in_id)
+        if input == None:
+            if self.out_id == -1:
+                raise GMT_Error("Using empty textset as input")
+
+            data = self._session.retrieve_data(self.out_id)
+            self.in_id = self._session.register_io(io_family['textset'], io_method['reference'],\
+                                              io_geometry['point'], io_direction['in'], None, data)
+            self.in_str = '-<'+self._session.encode_id(self.in_id)
+            
+
+    def register_output(self, output = None):
+        if output == None:
+            self.out_id = self._session.register_io(io_family['textset'], io_method['reference'],\
+                                               io_geometry['point'], io_direction['out'], None, None)
+            self.out_str = '->'+self._session.encode_id(self.out_id)
+
+        elif isinstance(output, str) == True:
+            self.out_id = self._session.register_io(io_family['textset'], io_method['file'],\
+                                               io_geometry['point'], io_direction['out'], None, output)
+            self.out_str = '->'+self._session.encode_id(self.out_id)
+
+        elif isinstance(output, file) == True:
+            fd =output.fileno()
+            self.out_id = self._session.register_io(io_family['textset'], io_method['fdesc'],\
+                                                   io_geometry['point'], io_direction['out'],\
+                                                   None, ctypes.pointer(ctypes.c_uint(fd)))
+            self.out_str = '->'+self._session.encode_id(self.out_id)
+
+        else:
+            raise GMT_Error("Text output format not implemented")
+
+
 
 class GMT_Textset:
     
