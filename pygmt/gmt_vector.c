@@ -25,12 +25,16 @@ static PyObject *free_gmt_vector ( PyObject *self, PyObject *args);
 static PyObject *gmt_matrix_from_array ( PyObject *self, PyObject *args);
 static PyObject *free_gmt_matrix ( PyObject *self, PyObject *args);
 
+static PyObject *gmt_textset_from_string_list ( PyObject *self, PyObject *args);
+static PyObject *free_gmt_textset ( PyObject *self, PyObject *args);
 
 static PyMethodDef _gmt_vectorMethods[] = {
     {"gmt_vector_from_array_list", gmt_vector_from_array_list, METH_VARARGS},
     {"free_gmt_vector", free_gmt_vector, METH_VARARGS},
     {"gmt_matrix_from_array", gmt_matrix_from_array, METH_VARARGS},
     {"free_gmt_matrix", free_gmt_vector, METH_VARARGS},
+    {"gmt_textset_from_string_list", gmt_textset_from_string_list, METH_VARARGS},
+    {"free_gmt_textset", free_gmt_textset, METH_VARARGS},
     {NULL, NULL}
 };
 
@@ -114,6 +118,67 @@ static PyObject *free_gmt_vector ( PyObject *self, PyObject *args)
 
     return Py_None;
 }
+
+static PyObject *gmt_textset_from_string_list ( PyObject *self, PyObject *args)
+{
+    unsigned long n_records;
+
+    struct GMT_TEXTSET* set;
+    struct GMT_TEXTTABLE* table;
+    struct GMT_TEXTSEGMENT *segment; 
+    char *record;
+    PyObject* textset;
+    PyObject* string_list;
+    PyObject* string;
+
+    //Parse a list of strings
+    if (!PyArg_ParseTuple(args, "O!O!", &PyLong_Type, &textset, &PyList_Type, &string_list)) return NULL;
+
+    //throw error if the size of the list doesn't make sense
+    n_records = PyList_Size(string_list);
+    if (n_records <=0) return NULL;
+
+    set = (struct GMT_TEXTSET *)PyLong_AsVoidPtr(textset);
+    table = set->table[0];
+    segment = table->segment[0];
+
+    //Loop over the columns and point each data pointer to the data
+    //in the numpy array. 
+    for (unsigned int i=0; i<n_records; i++)
+    {
+        string = PyList_GetItem(string_list, i);
+        segment->record[i] = PyString_AsString(string);
+        segment->n_rows = n_records;
+
+        Py_INCREF( string );
+    }
+    return Py_None;
+} 
+
+static PyObject *free_gmt_textset ( PyObject *self, PyObject *args)
+{
+    unsigned long n_records;
+
+    PyObject* string_list;
+    PyObject* string;
+
+    //Parse a list of numpy arrays
+    if (!PyArg_ParseTuple(args, "O!", &PyList_Type, &string_list)) return NULL;
+
+    //throw error if the size of the list doesn't make sense
+    n_records = PyList_Size(string_list);
+    if (n_records <=0) return NULL;
+
+
+    //Loop over the columns and point each data pointer to the data
+    //in the numpy array. 
+    for (unsigned int i=0; i<n_records; i++)
+    {
+        string = PyList_GetItem(string_list, i);
+        Py_DECREF( string );
+    }
+    return Py_None;
+} 
 
 
 static PyObject *gmt_matrix_from_array ( PyObject *self, PyObject *args)

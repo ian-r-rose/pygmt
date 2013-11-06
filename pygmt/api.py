@@ -82,23 +82,27 @@ class GMT_Session:
             raise GMT_Error("Couldn't retrieve data")
         return ptr 
 
-    def read_data(self, family, method, geometry, mode, wesn, input, ptr=None):
-        GMT_Read_Data.restype = GMT_Pointer
-        GMT_Read_Data = [GMT_Pointer, ctypes.c_uint, ctypes.c_uint, ctypes.c_uint, ctypes.c_unit,\
-                                                ctypes.POINTER(ctypes.c_double), ctypes.c_ubyte, ctypes.c_void_p]
-        data = GMT_Read_Data(self.session_ptr, family, method, geometry, \
-                                   mode, self._c_wesn(wesn), input, ptr)
-        if data == None:
-            raise GMT_Error("Couldn't read data")
-        return data
-    
-    def create_data(self,family,geometry,mode,par,wesn,inc,registration,pad,data_p):
+    def create_data(self, family, geometry, mode, par, wesn, inc, registration, pad, ptr):
         GMT_Create_Data=libgmt.GMT_Create_Data
-        GMT_Create_Data.restype = GMT_POINTER
-        GMT_Create_Data.argtypes = [GMT_Pointer, ctypes.c_uint,ctypes.c_uint,ctypes.c_ulonglong,ctypes.POINTER(ctypes.c_double),\
-                                    ctypes.POINTER(ctypes.c_double), ctypes.c_uint,ctypes.C_int,ctypes.c_void_p]
-        new_data_obj = GMT_Create_Data(self.session_ptr,family,geometry, 0, dim, None, None, 0, 0, None)
-        return new_data_obj 
+        GMT_Create_Data.restype = GMT_Pointer
+        GMT_Create_Data.argtypes = [GMT_Pointer, ctypes.c_uint, ctypes.c_uint, ctypes.c_uint, \
+                                    ctypes.POINTER(ctypes.c_ulong), ctypes.POINTER(ctypes.c_double), \
+                                    ctypes.POINTER(ctypes.c_double), ctypes.c_uint, ctypes.c_int, ctypes.c_void_p]
+        new_data_obj = GMT_Create_Data(self.session_ptr, family, geometry, mode, par, wesn, inc, registration, pad, ptr)
+        if new_data_obj == None:
+            raise GMT_Error("Couldn't create data")
+        return new_data_obj
+
+    def destroy_data(self, data):
+        GMT_Destroy_Data = libgmt.GMT_Destroy_Data
+        GMT_Destroy_Data.restype = int
+        GMT_Destroy_Data.argtypes = [GMT_Pointer, ctypes.c_void_p]
+        
+        ret = GMT_Destroy_Data(self.session_ptr, data)
+        if ret != 0:
+            print ret
+            raise GMT_Error("Couldn't destory data")
+
 
     def write_data(self, family, method, geometry, mode, wesn, output, data):
         ret = libgmt.GMT_Write_Data(self.session_ptr, family, method, geometry,\

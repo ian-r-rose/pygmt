@@ -1,5 +1,6 @@
 import api
 import gmt_types
+import gmt_text
 from flags import *
 import numpy as np
 import ctypes
@@ -63,6 +64,17 @@ class GMT_Figure(GMT_Figure_base):
 
 
     #All the GMT modules dealing with plotting text or numeric data
+   
+    def pstext(self, options, input):
+        '''
+        Call the GMT pstext module with the text string "options" and the input "input"
+        options is a text string of the flags to be given to pstext.
+        '''
+        t = gmt_text.GMT_Text(self._gmt_session)
+        t.register_input(input)
+        module_options = ' '.join([t.in_str, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+        self._print_call('pstext '+module_options)
+        self._gmt_session.call_module('pstext', module_options)
 
     def psxy(self, options, input):
         '''

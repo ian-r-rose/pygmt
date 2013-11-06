@@ -30,7 +30,7 @@ class GMT_Figure_base:
         #whether to output the GMT calls
         self.verbose = verbose
         if verbose == True:
-            self.ko_opt = self.ko_opt + ' -V'
+            self.ko_opt = self.ko_opt + ' -V4'
 
     def close(self):
         '''
