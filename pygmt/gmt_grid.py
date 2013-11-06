@@ -53,7 +53,7 @@ class GMT_Grid( GMT_Resource ):
             self.out_id = self._session.register_io(io_family['grid'], io_method['fdesc'],\
                                                    io_geometry['surface'], io_direction['out'],\
                                                    None, ctypes.pointer(ctypes.c_uint(fd)))
-            self.out_str = '-<'+self._session.encode_id(self.out_id)
+            self.out_str = '->'+self._session.encode_id(self.out_id)
 
         else:
             raise GMT_Error("Grid output format not implemented")
