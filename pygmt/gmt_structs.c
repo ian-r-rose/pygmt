@@ -28,7 +28,7 @@ static PyObject *free_gmt_matrix ( PyObject *self, PyObject *args);
 static PyObject *gmt_textset_from_string_list ( PyObject *self, PyObject *args);
 static PyObject *free_gmt_textset ( PyObject *self, PyObject *args);
 
-static PyMethodDef _gmt_vectorMethods[] = {
+static PyMethodDef _gmt_structsMethods[] = {
     {"gmt_vector_from_array_list", gmt_vector_from_array_list, METH_VARARGS},
     {"free_gmt_vector", free_gmt_vector, METH_VARARGS},
     {"gmt_matrix_from_array", gmt_matrix_from_array, METH_VARARGS},
@@ -38,9 +38,9 @@ static PyMethodDef _gmt_vectorMethods[] = {
     {NULL, NULL}
 };
 
-void init_gmt_vector()
+void init_gmt_structs()
 {
-    (void) Py_InitModule("_gmt_vector", _gmt_vectorMethods);
+    (void) Py_InitModule("_gmt_structs", _gmt_structsMethods);
     import_array();
 }
 

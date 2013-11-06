@@ -1,0 +1,75 @@
+import ctypes
+import numpy as np
+import _gmt_structs
+import api
+from flags import *
+from gmt_base_types import *
+
+
+class GMT_Grid( GMT_Resource ): 
+    '''
+    Class for storing id information for gridded data, such as would be
+    produced by xyz2grd or surface.  This will be associated with a 
+    particular GMT session, so they should not be mixed and matched.
+    '''
+
+    def register_input(self, input = None):
+
+        if input == None and self.out_id != -1:
+            data = self._session.retrieve_data(self.out_id)
+            self.in_id = self._session.register_io(io_family['grid'], io_method['reference'],\
+                                              io_geometry['surface'], io_direction['in'], None, data)
+            self.in_str = '-<'+self._session.encode_id(self.in_id)
+
+        elif isinstance(input, str) == True:
+            self.out_id = self._session.register_io(io_family['grid'], io_method['file'],\
+                                               io_geometry['surface'], io_direction['in'], None, input)
+            self.out_str = self._session.encode_id(self.in_id)
+
+        elif isinstance(input, file) == True:
+            fd =input.fileno()
+            self.out_id = self._session.register_io(io_family['grid'], io_method['fdesc'],\
+                                                   io_geometry['surface'], io_direction['out'],\
+                                                   None, ctypes.pointer(ctypes.c_uint(fd)))
+            self.out_str = '-<'+self._session.encode_id(self.in_id)
+
+        else:
+            raise GMT_Error("Grid input format not implemented")
+        
+    def register_output(self, output = None):
+
+        if output == None:
+            self.out_id = self._session.register_io(io_family['grid'], io_method['reference'],\
+                                               io_geometry['surface'], io_direction['out'], None, None)
+            self.out_str = self._session.encode_id(self.out_id)
+
+        elif isinstance(output, str) == True:
+            self.out_id = self._session.register_io(io_family['grid'], io_method['file'],\
+                                               io_geometry['surface'], io_direction['out'], None, output)
+            self.out_str = self._session.encode_id(self.out_id)
+
+        elif isinstance(output, file) == True:
+            fd =output.fileno()
+            self.out_id = self._session.register_io(io_family['grid'], io_method['fdesc'],\
+                                                   io_geometry['surface'], io_direction['out'],\
+                                                   None, ctypes.pointer(ctypes.c_uint(fd)))
+            self.out_str = '-<'+self._session.encode_id(self.out_id)
+
+        else:
+            raise GMT_Error("Grid output format not implemented")
+
+
+class GMT_Matrix:
+    '''
+    Class for storing GMT_MATRIX objects. Not working
+    '''
+    def __init__(self, x,y,array):
+        if not isinstance(array, np.ndarray):
+            raise GMT_Error("Must pass in a numpy matrix to GMT_Matrix")
+
+        self.ptr = ctypes.c_void_p(_gmt_structs.gmt_matrix_from_array(array, (np.amin(x),np.amax(x),np.amin(y),np.amax(y),0,0)))
+
+    def __del__(self):
+        _gmt_structs.free_gmt_matrix(long(self.ptr.value))
+
+

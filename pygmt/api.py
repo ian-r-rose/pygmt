@@ -1,6 +1,6 @@
 from flags import *
 import ctypes
-from gmt_types import GMT_Pointer, GMT_Error
+from gmt_base_types import GMT_Pointer, GMT_Error
 
 # import the GMT 5 library.  Must be a shared library.
 # Should have a better way of locating it later
