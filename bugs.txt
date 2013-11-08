@@ -9,4 +9,5 @@ The GMT API tries to free user-allocated memory all the time, causing crashes
 and segmentation faults.  As it is, this means we just need to let memory leak
 instead of cleaning up after ourselves.
 
+grdcontour segfaults when there are tic-marks and the contours are not closed.
 
