@@ -57,7 +57,7 @@ class GMT_Figure_base:
         if self.verbosity >= 0:
             print(str)
 
-    def _grid_dataset(self, module, options, input):
+    def _grid_dataset(self, module, options, input, output):
         
         #first register the input
         d = gmt_types.GMT_Dataset(self._gmt_session)
@@ -65,13 +65,12 @@ class GMT_Figure_base:
  
         #then register memory for the grid output
         g = gmt_types.GMT_Grid(self._gmt_session)
-        g.register_output()
+        g.register_output(output)
 
         #perform the gridding
         grid_opts = ' '.join([d.in_str, g.out_str, options])
         self._print_call(module+' '+grid_opts)
         self._gmt_session.call_module(module, grid_opts)
 
-#        g.register_input()
         return g        
 

@@ -15,33 +15,36 @@ class GMT_Figure(GMT_Figure_base):
 
     ### All the GMT modules for creating, writing, reading, and
     ### converting gridded data
-    def xyz2grd(self, options, input):
-        return self._grid_dataset('xyz2grd', options, input)
+    def xyz2grd(self, options, input, output=None):
+        return self._grid_dataset('xyz2grd', options, input, output)
 
-    def surface(self, options, input):
-        return self._grid_dataset('surface', options, input)
+    def surface(self, options, input, output=None):
+        return self._grid_dataset('surface', options, input, output)
 
     ### All the GMT modules for doing operations on gridded data
-    ### implement some of these!
-    def grdcut(self, options, input, output):
+    def grdcut(self, options, input, output = None):
         g1 = gmt_types.GMT_Grid(self._gmt_session)
         g1.register_input(input)
 
         g2 = gmt_types.GMT_Grid(self._gmt_session)
         g2.register_output(output)
 
-        module_options = ' '.join([g1.in_str, options, "-Gfrance.grd"])
+        module_options = ' '.join([g1.in_str, options, g2.out_str])
         self._print_call('grdcut '+module_options)
         self._gmt_session.call_module('grdcut', module_options)
         return g2
         
-    def grdinfo(self, options, input):
+    def grdinfo(self, options, input, output=None):
         g = gmt_types.GMT_Grid(self._gmt_session)
         g.register_input(input)
 
         module_options = ' '.join([g.in_str, options])
         self._print_call('grdinfo '+module_options)
         self._gmt_session.call_module('grdinfo', module_options)
+
+
+
+    ### All the GMT podules that plot gridded data
 
     def grdcontour(self,options, input):
         g = gmt_types.GMT_Grid(self._gmt_session)
