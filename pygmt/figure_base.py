@@ -7,7 +7,7 @@ import ctypes
 
 class GMT_Figure_base:
  
-    def __init__(self, ps_file, figure_range, projection, verbose=False):
+    def __init__(self, ps_file, figure_range='', projection='', verbosity=-1, autopilot=True):
         '''
         Initialize a GMT figure.  Sets up the GMT session,
         gets the range and projection types, and writes the
@@ -15,6 +15,7 @@ class GMT_Figure_base:
         '''
 
         self._gmt_session = api.GMT_Session(ps_file+" session")
+        self.autopilot = autopilot
 
         #set some universal GMT flags for this figure
         self.ps_file = ps_file
@@ -23,14 +24,19 @@ class GMT_Figure_base:
         self.range_opt = '-R'+figure_range
         self.proj_opt = '-J'+projection
 
-        #dummy call to psxy to write the header of the postscript file
-        open_options = ' '.join([self.proj_opt, self.range_opt, '-T -K ->%s'%self.ps_file])
-        self._gmt_session.call_module('psxy',  open_options)
+        #what level of verbosity
+        self.verbosity = verbosity
+        self.verbose_opt = ''
+        if verbosity >= 0:
+            self.verbose_opt = '-V'+str(verbosity)
 
-        #whether to output the GMT calls
-        self.verbose = verbose
-        if verbose == True:
-            self.ko_opt = self.ko_opt + ' -V4'
+        self.autopilot_options = ' '.join([self.range_opt, self.proj_opt, \
+                                 self.ko_opt, self.verbose_opt, self.ps_output] )
+
+        if self.autopilot == True:
+            #dummy call to psxy to write the header of the postscript file
+            open_options = ' '.join([self.proj_opt, self.range_opt, '-T -K ->%s'%self.ps_file])
+            self._gmt_session.call_module('psxy',  open_options)
 
     def close(self):
         '''
@@ -45,7 +51,7 @@ class GMT_Figure_base:
         '''
         Debug output for printing the options given to GMT modules
         '''
-        if self.verbose == True:
+        if self.verbosity >= 0:
             print(str)
 
     def _grid_dataset(self, module, options, input):

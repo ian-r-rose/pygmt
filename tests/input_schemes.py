@@ -9,7 +9,7 @@ size = np.linspace(0.1,0.3, 100)
 
 
 #produce the same figure in three different ways
-fig = pygmt.GMT_Figure("output.ps", figure_range='g', projection='H7i', verbose=True)
+fig = pygmt.GMT_Figure("output.ps", figure_range='g', projection='H7i', verbosity=4)
 fig.pscoast('-Glightgray -A500')
 fig.psbasemap('-B30g30/15g15') 
 

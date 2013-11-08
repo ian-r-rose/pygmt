@@ -19,7 +19,7 @@ f.close()
 f = open("test1.txt", 'r')
 
 
-fig = pygmt.GMT_Figure("output.ps", figure_range='0/1/0/1', projection='X7i', verbose=False)
+fig = pygmt.GMT_Figure("output.ps", figure_range='0/1/0/1', projection='X7i', verbosity=4)
 fig.pstext('', 'test.txt')
 fig.pstext('', f)
 fig.pstext('', ['0.25 0.65 Say test text', '0.5 0.4 three times', '0.75 0.15 fast'])

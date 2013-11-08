@@ -49,7 +49,7 @@ class GMT_Figure(GMT_Figure_base):
         Call the GMT pscontour module with the text string "options"
         '''
         assert( isinstance(grid, gmt_types.GMT_Grid) == True)
-        module_options = ' '.join([grid.in_str, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+        module_options = ' '.join([grid.in_str, options, self.autopilot_options])
         self._print_call('grdcontour '+module_options)
         self._gmt_session.call_module('grdcontour', module_options)
 
@@ -57,7 +57,7 @@ class GMT_Figure(GMT_Figure_base):
         g = gmt_types.GMT_Grid(self._gmt_session)
         g.register_input(input)
 
-        module_options = ' '.join([g.in_str, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+        module_options = ' '.join([g.in_str,  options, self.autopilot_options])
         self._print_call('grdcontour '+module_options)
         self._gmt_session.call_module('grdcontour', module_options)
 
@@ -66,7 +66,7 @@ class GMT_Figure(GMT_Figure_base):
         Call the GMT pscontour module with the text string "options"
         '''
         assert( isinstance(grid, gmt_types.GMT_Grid) == True)
-        module_options = ' '.join([grid.in_str, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+        module_options = ' '.join([grid.in_str, options, self.autopilot_options])
         self._print_call('grdimage '+module_options)
         self._gmt_session.call_module('grdimage', module_options)
 
@@ -76,7 +76,7 @@ class GMT_Figure(GMT_Figure_base):
         '''
         Call the GMT pscoast module with the text string "options"
         '''
-        module_options = ' '.join([self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+        module_options = ' '.join([options, self.autopilot_options])
         self._print_call('pscoast '+module_options)
         self._gmt_session.call_module('pscoast', module_options)
 
@@ -84,7 +84,7 @@ class GMT_Figure(GMT_Figure_base):
         '''
         Call the GMT psbasemap module with the text string "options"
         '''
-        module_options = ' '.join([self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+        module_options = ' '.join([options, self.autopilot_options])
         self._print_call('psbasemap '+module_options)
         self._gmt_session.call_module('psbasemap', module_options)
 
@@ -98,7 +98,7 @@ class GMT_Figure(GMT_Figure_base):
         '''
         t = gmt_types.GMT_Text(self._gmt_session)
         t.register_input(input)
-        module_options = ' '.join([t.in_str, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+        module_options = ' '.join([t.in_str, options, self.autopilot_options])
         self._print_call('pstext '+module_options)
         self._gmt_session.call_module('pstext', module_options)
 
@@ -109,7 +109,7 @@ class GMT_Figure(GMT_Figure_base):
         '''
         d = gmt_types.GMT_Dataset(self._gmt_session)
         d.register_input(input)
-        module_options = ' '.join([d.in_str, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+        module_options = ' '.join([d.in_str,  options, self.autopilot_options])
         self._print_call('psxy '+module_options)
         self._gmt_session.call_module('psxy', module_options)
 
@@ -119,7 +119,7 @@ class GMT_Figure(GMT_Figure_base):
         '''
         d = gmt_types.GMT_Dataset(self._gmt_session)
         d.register_input(input)
-        module_options = ' '.join([d.in_str, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+        module_options = ' '.join([d.in_str, options, self.autopilot_options])
         self._print_call('psclip '+module_options)
         self._gmt_session.call_module('psclip', module_options)
 
@@ -129,7 +129,7 @@ class GMT_Figure(GMT_Figure_base):
         '''
         d = gmt_types.GMT_Dataset(self._gmt_session)
         d.register_input(input)
-        module_options = ' '.join([d.in_str, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+        module_options = ' '.join([d.in_str, options, self.autopilot_options])
         self._print_call('pscontour '+module_options)
         self._gmt_session.call_module('pscontour', module_options)
 
@@ -139,7 +139,7 @@ class GMT_Figure(GMT_Figure_base):
         '''
         d = gmt_types.GMT_Dataset(self._gmt_session)
         d.register_input(input)
-        module_options = ' '.join([d.in_str, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+        module_options = ' '.join([d.in_str, options, self.autopilot_options])
         self._print_call('psmask '+module_options)
         self._gmt_session.call_module('psmask', module_options)
 
@@ -149,7 +149,7 @@ class GMT_Figure(GMT_Figure_base):
         '''
         d = gmt_types.GMT_Dataset(self._gmt_session)
         d.register_input(input)
-        module_options = ' '.join([d.in_str, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+        module_options = ' '.join([d.in_str, options, self.autopilot_options])
         self._print_call('pswiggle '+module_options)
         self._gmt_session.call_module('pswiggle', module_options)
 
