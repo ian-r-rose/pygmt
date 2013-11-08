@@ -15,11 +15,23 @@ class GMT_Grid( GMT_Resource ):
 
     def register_input(self, input = None):
 
-        if input == None and self.out_id != -1:
+        if input == None:
+            if input.out_id == -1:
+                raise GMT_Error("Input grid empty")
             data = self._session.retrieve_data(self.out_id)
             self.in_id = self._session.register_io(io_family['grid'], io_method['reference'],\
                                               io_geometry['surface'], io_direction['in'], None, data)
             self.in_str = '-<'+self._session.encode_id(self.in_id)
+
+        if isinstance(input, GMT_Grid):
+            if input.out_id == -1:
+                raise GMT_Error("Input grid empty")
+
+            data = self._session.retrieve_data(input.out_id)
+            self.in_id = self._session.register_io(io_family['grid'], io_method['reference'],\
+                                              io_geometry['surface'], io_direction['in'], None, data)
+            self.in_str = '-<'+self._session.encode_id(self.in_id)
+            
 
         elif isinstance(input, str) == True:
             ptr = self._session.read_data(io_family['grid'], io_method['file'],

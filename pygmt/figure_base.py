@@ -72,6 +72,6 @@ class GMT_Figure_base:
         self._print_call(module+' '+grid_opts)
         self._gmt_session.call_module(module, grid_opts)
 
-        g.register_input()
+#        g.register_input()
         return g        
 

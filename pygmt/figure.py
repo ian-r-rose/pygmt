@@ -43,17 +43,7 @@ class GMT_Figure(GMT_Figure_base):
         self._print_call('grdinfo '+module_options)
         self._gmt_session.call_module('grdinfo', module_options)
 
-    ### All the GMT modules for plotting things related to gridded data
-    def grdcontour(self,options, grid):
-        '''
-        Call the GMT pscontour module with the text string "options"
-        '''
-        assert( isinstance(grid, gmt_types.GMT_Grid) == True)
-        module_options = ' '.join([grid.in_str, options, self.autopilot_options])
-        self._print_call('grdcontour '+module_options)
-        self._gmt_session.call_module('grdcontour', module_options)
-
-    def grdcontour_test(self,options, input):
+    def grdcontour(self,options, input):
         g = gmt_types.GMT_Grid(self._gmt_session)
         g.register_input(input)
 
@@ -61,12 +51,14 @@ class GMT_Figure(GMT_Figure_base):
         self._print_call('grdcontour '+module_options)
         self._gmt_session.call_module('grdcontour', module_options)
 
-    def grdimage(self,options, grid):
+    def grdimage(self,options, input):
         '''
         Call the GMT pscontour module with the text string "options"
         '''
-        assert( isinstance(grid, gmt_types.GMT_Grid) == True)
-        module_options = ' '.join([grid.in_str, options, self.autopilot_options])
+        g = gmt_types.GMT_Grid(self._gmt_session)
+        g.register_input(input)
+
+        module_options = ' '.join([g.in_str,  options, self.autopilot_options])
         self._print_call('grdimage '+module_options)
         self._gmt_session.call_module('grdimage', module_options)
 
@@ -155,7 +147,7 @@ class GMT_Figure(GMT_Figure_base):
 
 
     ### All the GMT modules that do text or data operations without plotting
-    def grd2cpt_test(self, options, input, outfile):
+    def grd2cpt(self, options, input, outfile):
         g = gmt_types.GMT_Grid(self._gmt_session)
         g.register_input(input)
         cpt_output = '->'+outfile
@@ -164,13 +156,6 @@ class GMT_Figure(GMT_Figure_base):
         self._gmt_session.call_module('grd2cpt', module_options)
 
  
-    def grd2cpt(self, options, grid, outfile):
-        assert( isinstance(grid, gmt_types.GMT_Grid) == True)
-        cpt_output = '->'+outfile
-        module_options = ' '.join([grid.in_str, options, cpt_output])
-        self._print_call('grd2cpt '+module_options)
-        self._gmt_session.call_module('grd2cpt', module_options)
-
     def makecpt(self, options, outfile):
         cpt_output = '->'+outfile
         module_options = ' '.join([options, cpt_output])
