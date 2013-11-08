@@ -23,6 +23,25 @@ class GMT_Figure(GMT_Figure_base):
 
     ### All the GMT modules for doing operations on gridded data
     ### implement some of these!
+    def grdcut(self, options, input, output):
+        g1 = gmt_types.GMT_Grid(self._gmt_session)
+        g1.register_input(input)
+
+        g2 = gmt_types.GMT_Grid(self._gmt_session)
+        g2.register_output(output)
+
+        module_options = ' '.join([g1.in_str, options, "-Gfrance.grd"])
+        self._print_call('grdcut '+module_options)
+        self._gmt_session.call_module('grdcut', module_options)
+        return g2
+        
+    def grdinfo(self, options, input):
+        g = gmt_types.GMT_Grid(self._gmt_session)
+        g.register_input(input)
+
+        module_options = ' '.join([g.in_str, options])
+        self._print_call('grdinfo '+module_options)
+        self._gmt_session.call_module('grdinfo', module_options)
 
     ### All the GMT modules for plotting things related to gridded data
     def grdcontour(self,options, grid):
@@ -31,6 +50,14 @@ class GMT_Figure(GMT_Figure_base):
         '''
         assert( isinstance(grid, gmt_types.GMT_Grid) == True)
         module_options = ' '.join([grid.in_str, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
+        self._print_call('grdcontour '+module_options)
+        self._gmt_session.call_module('grdcontour', module_options)
+
+    def grdcontour_test(self,options, input):
+        g = gmt_types.GMT_Grid(self._gmt_session)
+        g.register_input(input)
+
+        module_options = ' '.join([g.in_str, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
         self._print_call('grdcontour '+module_options)
         self._gmt_session.call_module('grdcontour', module_options)
 
@@ -69,7 +96,7 @@ class GMT_Figure(GMT_Figure_base):
         Call the GMT pstext module with the text string "options" and the input "input"
         options is a text string of the flags to be given to pstext.
         '''
-        t = gmt_text.GMT_Text(self._gmt_session)
+        t = gmt_types.GMT_Text(self._gmt_session)
         t.register_input(input)
         module_options = ' '.join([t.in_str, self.proj_opt, self.range_opt, options, self.ko_opt, self.ps_output])
         self._print_call('pstext '+module_options)
@@ -128,6 +155,14 @@ class GMT_Figure(GMT_Figure_base):
 
 
     ### All the GMT modules that do text or data operations without plotting
+    def grd2cpt_test(self, options, input, outfile):
+        g = gmt_types.GMT_Grid(self._gmt_session)
+        g.register_input(input)
+        cpt_output = '->'+outfile
+        module_options = ' '.join([g.in_str, options, cpt_output])
+        self._print_call('grd2cpt '+module_options)
+        self._gmt_session.call_module('grd2cpt', module_options)
+
  
     def grd2cpt(self, options, grid, outfile):
         assert( isinstance(grid, gmt_types.GMT_Grid) == True)

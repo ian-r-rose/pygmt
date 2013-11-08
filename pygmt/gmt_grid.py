@@ -21,10 +21,20 @@ class GMT_Grid( GMT_Resource ):
                                               io_geometry['surface'], io_direction['in'], None, data)
             self.in_str = '-<'+self._session.encode_id(self.in_id)
 
+        elif isinstance(input, GMT_Pointer):
+            self.in_id = self._session.register_io(io_family['grid'], io_method['reference'],\
+                                              io_geometry['surface'], io_direction['in'], None, input)
+            self.in_str = '-<'+self._session.encode_id(self.in_id)
+            print self.in_id, self.in_str
+
+
         elif isinstance(input, str) == True:
-            self.in_id = self._session.register_io(io_family['grid'], io_method['file'],\
-                                               io_geometry['surface'], io_direction['in'], None, input)
-            self.in_str = self._session.encode_id(self.in_id)
+            ptr = self._session.read_data(io_family['grid'], io_method['file'],
+                                              io_geometry['surface'], io_grid_mode['all'],
+                                              None, input, None)
+            self.in_id = self._session.register_io(io_family['grid'], io_method['reference'],\
+                                               io_geometry['surface'], io_direction['in'], None, ptr)
+            self.in_str = '-<'+self._session.encode_id(self.in_id)
 
         elif isinstance(input, file) == True:
             fd =input.fileno()
@@ -41,19 +51,19 @@ class GMT_Grid( GMT_Resource ):
         if output == None:
             self.out_id = self._session.register_io(io_family['grid'], io_method['reference'],\
                                                io_geometry['surface'], io_direction['out'], None, None)
-            self.out_str = self._session.encode_id(self.out_id)
+            self.out_str = '-G'+self._session.encode_id(self.out_id)
 
         elif isinstance(output, str) == True:
             self.out_id = self._session.register_io(io_family['grid'], io_method['file'],\
                                                io_geometry['surface'], io_direction['out'], None, output)
-            self.out_str = self._session.encode_id(self.out_id)
+            self.out_str = '-G'+self._session.encode_id(self.out_id)
 
         elif isinstance(output, file) == True:
             fd =output.fileno()
             self.out_id = self._session.register_io(io_family['grid'], io_method['fdesc'],\
                                                    io_geometry['surface'], io_direction['out'],\
                                                    None, ctypes.pointer(ctypes.c_uint(fd)))
-            self.out_str = '->'+self._session.encode_id(self.out_id)
+            self.out_str = '-G'+self._session.encode_id(self.out_id)
 
         else:
             raise GMT_Error("Grid output format not implemented")
