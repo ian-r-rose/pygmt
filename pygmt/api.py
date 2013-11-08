@@ -103,6 +103,15 @@ class GMT_Session:
             print ret
             raise GMT_Error("Couldn't destory data")
 
+    def read_data(self,family, method, geometry, mode, wesn, input, ptr):
+        GMT_Read_Data = libgmt.GMT_Read_Data
+        GMT_Read_Data.restype = GMT_Pointer
+        GMT_Read_Data.argtypes = [GMT_Pointer, ctypes.c_uint, ctypes.c_uint, ctypes.c_uint, ctypes.c_uint,\
+                                  ctypes.POINTER(ctypes.c_double), ctypes.c_char_p, ctypes.c_void_p]
+        data = GMT_Read_Data(self.session_ptr, family, method, geometry, mode, self._c_wesn(wesn), input, ptr)
+        if data == None:
+            raise GMT_Error("Couldn't read data")
+        return data
 
     def write_data(self, family, method, geometry, mode, wesn, output, data):
         ret = libgmt.GMT_Write_Data(self.session_ptr, family, method, geometry,\
