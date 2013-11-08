@@ -79,9 +79,9 @@ class GMT_Textset:
    
         #create the textset using the GMT API
         n_records = long(len(input))
-        par = (ctypes.c_ulong*3)(1,1,n_records)
+        par = (ctypes.c_ulonglong*3)(1,1,n_records)
         self.ptr = self._session.create_data( io_family['textset'], io_geometry['point'],\
-                                              0, ctypes.cast(par, ctypes.POINTER(ctypes.c_ulong)),\
+                                              0, ctypes.cast(par, ctypes.POINTER(ctypes.c_ulonglong)),\
                                               None, None, 0, -1, None)
         #assign the memory locations to the internal c strings
         ctypes.c_void_p(_gmt_structs.gmt_textset_from_string_list(long(self.ptr.value), input))

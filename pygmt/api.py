@@ -86,7 +86,7 @@ class GMT_Session:
         GMT_Create_Data=libgmt.GMT_Create_Data
         GMT_Create_Data.restype = GMT_Pointer
         GMT_Create_Data.argtypes = [GMT_Pointer, ctypes.c_uint, ctypes.c_uint, ctypes.c_uint, \
-                                    ctypes.POINTER(ctypes.c_ulong), ctypes.POINTER(ctypes.c_double), \
+                                    ctypes.POINTER(ctypes.c_ulonglong), ctypes.POINTER(ctypes.c_double), \
                                     ctypes.POINTER(ctypes.c_double), ctypes.c_uint, ctypes.c_int, ctypes.c_void_p]
         new_data_obj = GMT_Create_Data(self.session_ptr, family, geometry, mode, par, wesn, inc, registration, pad, ptr)
         if new_data_obj == None:
