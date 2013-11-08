@@ -30,8 +30,10 @@ class GMT_Figure_base:
         if verbosity >= 0:
             self.verbose_opt = '-V'+str(verbosity)
 
-        self.autopilot_options = ' '.join([self.range_opt, self.proj_opt, \
-                                 self.ko_opt, self.verbose_opt, self.ps_output] )
+        self.autopilot_options = ''
+        if self.autopilot == True:
+          self.autopilot_options = ' '.join([self.range_opt, self.proj_opt, \
+                                   self.ko_opt, self.verbose_opt, self.ps_output] )
 
         if self.autopilot == True:
             #dummy call to psxy to write the header of the postscript file
@@ -44,8 +46,9 @@ class GMT_Figure_base:
         in the figure file.
         '''
         #dummy call to psxy
-        close_options = ' '.join([self.proj_opt, self.range_opt, '-T -O', self.ps_output])
-        self._gmt_session.call_module('psxy', close_options)
+        if self.autopilot == True:
+            close_options = ' '.join([self.proj_opt, self.range_opt, '-T -O', self.ps_output])
+            self._gmt_session.call_module('psxy', close_options)
 
     def _print_call(self, str):
         '''
