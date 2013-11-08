@@ -7,7 +7,7 @@ import ctypes
 
 class GMT_Figure_base:
  
-    def __init__(self, ps_file, figure_range='', projection='', verbosity=-1, autopilot=True):
+    def __init__(self, ps_file='', figure_range='', projection='', verbosity=-1, autopilot=True):
         '''
         Initialize a GMT figure.  Sets up the GMT session,
         gets the range and projection types, and writes the
