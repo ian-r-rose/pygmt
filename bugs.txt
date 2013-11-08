@@ -1,5 +1,9 @@
 GMT_create_textset() does not set the n_rows field.
 
+We cannot register a grd file and then pass it to a GMT_Module, because it
+mistakenly passes the GMT_File_Is_Memory check in GMT_Register_IO.  It then
+looks in memory, but cannot find it, because it is, after all, a file.
+
 In general, creating GMT resources that point to user data is problematic.
 The GMT API tries to free user-allocated memory all the time, causing crashes
 and segmentation faults.  As it is, this means we just need to let memory leak
