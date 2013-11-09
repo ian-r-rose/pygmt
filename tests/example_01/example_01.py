@@ -1,5 +1,5 @@
 import sys,os
-sys.path.insert(1,os.path.abspath('..'))
+sys.path.insert(1,os.path.abspath('../..'))
 import pygmt
 
 ps = 'example_01.ps'

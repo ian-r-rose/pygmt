@@ -16,9 +16,15 @@ class GMT_Dataset (GMT_Resource):
         #first check if it is a string.  if so, try to open
         #a file with that name 
         if isinstance(input, str) == True:
-            self.in_id = self._session.register_io(io_family['dataset'], io_method['file'],\
-                                          io_geometry['point'], io_direction['in'],\
-                                          None, input)
+            #self.in_id = self._session.register_io(io_family['dataset'], io_method['file'],\
+            #                              io_geometry['point'], io_direction['in'],\
+            #                              None, input)
+            #self.in_str = '-<'+self._session.encode_id(self.in_id)
+            ptr = self._session.read_data(io_family['textset'], io_method['file'],
+                                              io_geometry['point'], io_grid_mode['all'],
+                                              None, input, None)
+            self.in_id = self._session.register_io(io_family['textset'], io_method['reference'],\
+                                               io_geometry['point'], io_direction['in'], None, ptr)
             self.in_str = '-<'+self._session.encode_id(self.in_id)
 
         #if instead it is a python file object, get the file descriptor
