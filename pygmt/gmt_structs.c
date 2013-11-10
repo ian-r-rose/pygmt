@@ -12,7 +12,7 @@
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 
 #include <Python.h>
-#include <arrayobject.h>
+#include <numpy/arrayobject.h>
 #include <gmt.h>
 
 
@@ -28,11 +28,13 @@ static PyObject *free_gmt_matrix ( PyObject *self, PyObject *args);
 static PyObject *gmt_textset_from_string_list ( PyObject *self, PyObject *args);
 static PyObject *free_gmt_textset ( PyObject *self, PyObject *args);
 
+void init_gmt_structs(void);
+
 static PyMethodDef _gmt_structsMethods[] = {
     {"gmt_vector_from_array_list", gmt_vector_from_array_list, METH_VARARGS},
     {"free_gmt_vector", free_gmt_vector, METH_VARARGS},
     {"gmt_matrix_from_array", gmt_matrix_from_array, METH_VARARGS},
-    {"free_gmt_matrix", free_gmt_vector, METH_VARARGS},
+    {"free_gmt_matrix", free_gmt_matrix, METH_VARARGS},
     {"gmt_textset_from_string_list", gmt_textset_from_string_list, METH_VARARGS},
     {"free_gmt_textset", free_gmt_textset, METH_VARARGS},
     {NULL, NULL}
@@ -57,6 +59,7 @@ static PyObject *gmt_vector_from_array_list ( PyObject *self, PyObject *args)
     PyObject* array_list;
     PyArrayObject* array;
     double *array_data;
+    unsigned int i;
 
     //Parse a list of numpy arrays
     if (!PyArg_ParseTuple(args, "O!", &PyList_Type, &array_list)) return NULL;
@@ -79,7 +82,7 @@ static PyObject *gmt_vector_from_array_list ( PyObject *self, PyObject *args)
 
     //Loop over the columns and point each data pointer to the data
     //in the numpy array. 
-    for (unsigned int i=0; i<n_cols; i++)
+    for (i=0; i<n_cols; i++)
     {
         array = (PyArrayObject *)PyList_GetItem(array_list, i);
         array_data = (double *)PyArray_DATA(array);
@@ -102,12 +105,13 @@ static PyObject *free_gmt_vector ( PyObject *self, PyObject *args)
     PyObject* ref;
     PyObject* array_list;
     unsigned int n_cols;
+    unsigned int i;
 
     if (!PyArg_ParseTuple(args, "O!O!", &PyLong_Type, &ref, &PyList_Type, &array_list)) return NULL;
 
     n_cols = PyList_Size(array_list);
     if (n_cols <=0) return NULL;
-    for (unsigned int i=0; i<n_cols; i++)
+    for (i=0; i<n_cols; i++)
         Py_DECREF(PyList_GetItem(array_list, i));
      
     vector = (struct GMT_VECTOR *)PyLong_AsVoidPtr(ref);
@@ -126,10 +130,10 @@ static PyObject *gmt_textset_from_string_list ( PyObject *self, PyObject *args)
     struct GMT_TEXTSET* set;
     struct GMT_TEXTTABLE* table;
     struct GMT_TEXTSEGMENT *segment; 
-    char *record;
     PyObject* textset;
     PyObject* string_list;
     PyObject* string;
+    unsigned int i;
 
     //Parse a list of strings
     if (!PyArg_ParseTuple(args, "O!O!", &PyLong_Type, &textset, &PyList_Type, &string_list)) return NULL;
@@ -144,7 +148,7 @@ static PyObject *gmt_textset_from_string_list ( PyObject *self, PyObject *args)
 
     //Loop over the columns and point each data pointer to the data
     //in the numpy array. 
-    for (unsigned int i=0; i<n_records; i++)
+    for (i=0; i<n_records; i++)
     {
         string = PyList_GetItem(string_list, i);
         segment->record[i] = PyString_AsString(string);
@@ -161,6 +165,7 @@ static PyObject *free_gmt_textset ( PyObject *self, PyObject *args)
 
     PyObject* string_list;
     PyObject* string;
+    unsigned int i;
 
     //Parse a list of numpy arrays
     if (!PyArg_ParseTuple(args, "O!", &PyList_Type, &string_list)) return NULL;
@@ -172,7 +177,7 @@ static PyObject *free_gmt_textset ( PyObject *self, PyObject *args)
 
     //Loop over the columns and point each data pointer to the data
     //in the numpy array. 
-    for (unsigned int i=0; i<n_records; i++)
+    for (i=0; i<n_records; i++)
     {
         string = PyList_GetItem(string_list, i);
         Py_DECREF( string );
@@ -190,6 +195,7 @@ static PyObject *gmt_matrix_from_array ( PyObject *self, PyObject *args)
 
     PyArrayObject* array;
     double *array_data;
+    unsigned int i;
 
     //Parse a list of numpy arrays
     if (!PyArg_ParseTuple(args, "O!(dddddd)", &PyArray_Type, &array, 
@@ -216,7 +222,7 @@ static PyObject *gmt_matrix_from_array ( PyObject *self, PyObject *args)
 
     matrix->type = (enum GMT_enum_type)GMT_DOUBLE;
     matrix->data = (union GMT_UNIVECTOR)array_data;
-    for (unsigned int i=0; i<6; ++i)
+    for (i=0; i<6; ++i)
         matrix->range[i] = range[i];
 
 //    for (unsigned int i=0; i<n_rows*n_cols; ++i)

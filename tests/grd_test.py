@@ -1,5 +1,5 @@
-import sys,os
-sys.path.insert(1,os.path.abspath('..'))
+#import sys,os
+#sys.path.insert(1,os.path.abspath('..'))
 import pygmt
 import numpy as np
 from scipy.special import sph_harm

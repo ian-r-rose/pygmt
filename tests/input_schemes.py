@@ -1,5 +1,3 @@
-import sys,os
-sys.path.insert(1,os.path.abspath('..'))
 import pygmt
 import numpy as np
 

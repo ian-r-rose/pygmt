@@ -1,5 +1,8 @@
+*.cfg
 *.swp
+build/*
 *.pyc
+*.tmp
 *.history
 *.ps
 *.gmtcommands

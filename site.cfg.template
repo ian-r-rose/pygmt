@@ -1,0 +1,6 @@
+# site.cfg file for pygmt #
+
+[DEFAULT]
+gmt_lib_directory=/home/ian/local/lib
+gmt_include_directory=/home/ian/local/include/gmt
+

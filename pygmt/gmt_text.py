@@ -21,7 +21,7 @@ class GMT_Text (GMT_Resource):
             fd =input.fileno()
             self.in_id = self._session.register_io(io_family['textset'], io_method['fdesc'],\
                                           io_geometry['point'], io_direction['in'],\
-                                          None, ctypes.pointer(ctypes.c_uint(fd)))
+                                          None, ctypes.pointer(ctypes.c_int(fd)))
             self.in_str = '-<'+self._session.encode_id(self.in_id)
 
         #if it is a list of strings, make a GMT_Textset object and register it

@@ -1,5 +1,3 @@
-import sys,os
-sys.path.insert(1,os.path.abspath('..'))
 import pygmt
 
 fig = pygmt.GMT_Figure("output.ps", figure_range='g', projection='H7i')

@@ -1,5 +1,3 @@
-import sys,os
-sys.path.insert(1,os.path.abspath('..'))
 import pygmt
 
 fig = pygmt.GMT_Figure('namer.ps', figure_range='220/300/20/65', projection='B260/40/20/65/7i',verbosity=4)
