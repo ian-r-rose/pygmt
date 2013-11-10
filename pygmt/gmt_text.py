@@ -18,11 +18,7 @@ class GMT_Text (gmt_base_types.GMT_Resource):
         #if instead it is a python file object, get the file descriptor
         #number and open with that
         elif isinstance(input, file) == True:
-            fd =input.fileno()
-            self.in_id = self._session.register_io(io_family['textset'], io_method['fdesc'],\
-                                          io_geometry['point'], io_direction['in'],\
-                                          None, ctypes.pointer(ctypes.c_int(fd)))
-            self.in_str = '-<'+self._session.encode_id(self.in_id)
+            raise api.GMT_Error("Please give filename instead of open file object")
 
         #if it is a list of strings, make a GMT_Textset object and register it
         elif isinstance(input, list):
@@ -53,11 +49,7 @@ class GMT_Text (gmt_base_types.GMT_Resource):
             self.out_str = '->'+self._session.encode_id(self.out_id)
 
         elif isinstance(output, file) == True:
-            fd =output.fileno()
-            self.out_id = self._session.register_io(io_family['textset'], io_method['fdesc'],\
-                                                   io_geometry['point'], io_direction['out'],\
-                                                   None, ctypes.pointer(ctypes.c_uint(fd)))
-            self.out_str = '->'+self._session.encode_id(self.out_id)
+            raise api.GMT_Error("Please give filename instead of open file object")
 
         else:
             raise api.GMT_Error("Text output format not implemented")

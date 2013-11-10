@@ -20,10 +20,4 @@ np.savetxt("test.txt", zip(lons+100,lats,size))
 fig.psxy('-Sci', "test.txt")
 
 
-#third, pass a python file which is open for reading
-np.savetxt("test.txt", zip(lons+150,lats,size))
-f = open("test.txt")
-fig.psxy('-Sci', f)
-
-
 fig.close()
