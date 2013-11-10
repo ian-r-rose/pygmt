@@ -19,8 +19,8 @@ class GMT_Resource:
         self._session = session
 
     def register_input(self, input = None):
-        raise GMT_Error("Base class method not implemented")
+        raise api.GMT_Error("Base class method not implemented")
 
     def register_output(self, output = None):
-        raise GMT_Error("Base class method not implemented")
+        raise api.GMT_Error("Base class method not implemented")
 

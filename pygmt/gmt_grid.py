@@ -3,10 +3,10 @@ import numpy as np
 import _gmt_structs
 import api
 from flags import *
-from gmt_base_types import *
+import gmt_base_types
 
 
-class GMT_Grid( GMT_Resource ): 
+class GMT_Grid( gmt_base_types.GMT_Resource ): 
     '''
     Class for storing id information for gridded data, such as would be
     produced by xyz2grd or surface.  This will be associated with a 
@@ -17,7 +17,7 @@ class GMT_Grid( GMT_Resource ):
 
         if input == None:
             if input.out_id == -1:
-                raise GMT_Error("Input grid empty")
+                raise api.GMT_Error("Input grid empty")
             data = self._session.retrieve_data(self.out_id)
             self.in_id = self._session.register_io(io_family['grid'], io_method['reference'],\
                                               io_geometry['surface'], io_direction['in'], None, data)
@@ -25,7 +25,7 @@ class GMT_Grid( GMT_Resource ):
 
         if isinstance(input, GMT_Grid):
             if input.out_id == -1:
-                raise GMT_Error("Input grid empty")
+                raise api.GMT_Error("Input grid empty")
 
             data = self._session.retrieve_data(input.out_id)
             self.in_id = self._session.register_io(io_family['grid'], io_method['reference'],\
@@ -42,7 +42,7 @@ class GMT_Grid( GMT_Resource ):
             self.in_str = '-<'+self._session.encode_id(self.in_id)
 
         else:
-            raise GMT_Error("Grid input format not supported")
+            raise api.GMT_Error("Grid input format not supported")
         
     def register_output(self, output = None):
 
@@ -57,7 +57,7 @@ class GMT_Grid( GMT_Resource ):
             self.out_str = '-G'+self._session.encode_id(self.out_id)
 
         else:
-            raise GMT_Error("Grid output format not implemented")
+            raise api.GMT_Error("Grid output format not implemented")
 
 
 class GMT_Matrix:
@@ -66,7 +66,7 @@ class GMT_Matrix:
     '''
     def __init__(self, x,y,array):
         if not isinstance(array, np.ndarray):
-            raise GMT_Error("Must pass in a numpy matrix to GMT_Matrix")
+            raise api.GMT_Error("Must pass in a numpy matrix to GMT_Matrix")
 
         self.ptr = ctypes.c_void_p(_gmt_structs.gmt_matrix_from_array(array, (np.amin(x),np.amax(x),np.amin(y),np.amax(y),0,0)))
 

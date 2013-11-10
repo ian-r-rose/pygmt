@@ -3,9 +3,9 @@ import numpy as np
 import _gmt_structs
 import api
 from flags import *
-from gmt_base_types import *
+import gmt_base_types
 
-class GMT_Dataset (GMT_Resource):
+class GMT_Dataset (gmt_base_types.GMT_Resource):
     '''
     Class for storing id information for a dataset, such as would be
     produced by block* or triangulate.  This will be associated with a 
@@ -63,13 +63,13 @@ class GMT_Dataset (GMT_Resource):
 
         #if it is some other GMT resource, throw an error
         elif isinstance(input, GMT_Resource) and isinstance(input, GMT_Dataset) == False:
-            raise GMT_Error("This module does not support GMT resources other than Datasets")
+            raise api.GMT_Error("This module does not support GMT resources other than Datasets")
 
         elif input == None:
-            raise GMT_Error("Not implemented")
+            raise api.GMT_Error("Not implemented")
 
         else:
-            raise GMT_Error("Unsupported input type") 
+            raise api.GMT_Error("Unsupported input type") 
 
     def register_output(self, output=None):
         '''
@@ -105,11 +105,11 @@ class GMT_Dataset (GMT_Resource):
 
         #If it is a GMT_vector, or GMT_grid, throw an error, as we don't want to write that.
         elif isinstance(output, GMT_Vector):
-            raise GMT_Error("This module does not support output of type GMT_Vector")
+            raise api.GMT_Error("This module does not support output of type GMT_Vector")
         elif isinstance(output, GMT_Resource):
-            raise GMT_Error("This module does not support output to specific GMT Resources")
+            raise api.GMT_Error("This module does not support output to specific GMT Resources")
         else:
-            raise GMT_Error("Unsupported output type") 
+            raise api.GMT_Error("Unsupported output type") 
             
 
 class GMT_Vector:
@@ -121,13 +121,13 @@ class GMT_Vector:
     def __init__(self, arrays):
         tmp_arrays = []
         if not isinstance(arrays, list):
-            raise GMT_Error("Must pass in a list of arrays to GMT_Vector")
+            raise api.GMT_Error("Must pass in a list of arrays to GMT_Vector")
         for a in arrays:
             assert( isinstance(a, np.ndarray) )
             if a.shape != arrays[0].shape:
-                raise GMT_Error("Arrays must be of the same shape")
+                raise api.GMT_Error("Arrays must be of the same shape")
             if a.ndim != 1 and a.ndim != 2:
-                raise GMT_Error("Arrays must be 1 or 2 dimensional")
+                raise api.GMT_Error("Arrays must be 1 or 2 dimensional")
 
             if a.ndim == 2:
                 tmp_arrays.append( a.flatten() )

@@ -1,11 +1,11 @@
 import _gmt_structs
 import api
 from flags import *
-from gmt_base_types import *
+import gmt_base_types
 import ctypes
 
 
-class GMT_Text (GMT_Resource):
+class GMT_Text (gmt_base_types.GMT_Resource):
     def register_input(self, input=None):
         #first check if it is a string.  if so, try to open
         #a file with that name 
@@ -33,7 +33,7 @@ class GMT_Text (GMT_Resource):
             self.in_str = '-<'+self._session.encode_id(self.in_id)
         if input == None:
             if self.out_id == -1:
-                raise GMT_Error("Using empty textset as input")
+                raise api.GMT_Error("Using empty textset as input")
 
             data = self._session.retrieve_data(self.out_id)
             self.in_id = self._session.register_io(io_family['textset'], io_method['reference'],\
@@ -60,7 +60,7 @@ class GMT_Text (GMT_Resource):
             self.out_str = '->'+self._session.encode_id(self.out_id)
 
         else:
-            raise GMT_Error("Text output format not implemented")
+            raise api.GMT_Error("Text output format not implemented")
 
 
 
@@ -71,10 +71,10 @@ class GMT_Textset:
          
          # do some type checking
         if isinstance( input, list) == False:
-            raise GMT_Error("Textset must be given a list of strings")
+            raise api.GMT_Error("Textset must be given a list of strings")
         for s in input:
             if isinstance(s, str) == False:
-                raise GMT_Error("Textset must be given a list of strings")
+                raise api.GMT_Error("Textset must be given a list of strings")
         self.string_list = input
    
         #create the textset using the GMT API
