@@ -15,6 +15,7 @@ static PyObject *gmt_retrieve_data ( PyObject *self, PyObject *args);
 static PyObject *gmt_create_data ( PyObject *self, PyObject *args);
 static PyObject *gmt_destroy_data ( PyObject *self, PyObject *args);
 static PyObject *gmt_read_data ( PyObject *self, PyObject *args);
+static PyObject *gmt_write_data ( PyObject *self, PyObject *args);
 static PyObject *gmt_call_module ( PyObject *self, PyObject *args);
 
 
@@ -36,6 +37,7 @@ static PyMethodDef _apiMethods[] = {
     {"gmt_create_data", gmt_create_data, METH_VARARGS},
     {"gmt_destroy_data", gmt_destroy_data, METH_VARARGS},
     {"gmt_read_data", gmt_read_data, METH_VARARGS},
+    {"gmt_write_data", gmt_write_data, METH_VARARGS},
     {"gmt_call_module", gmt_call_module, METH_VARARGS},
     {NULL, NULL}
 };
@@ -375,6 +377,69 @@ static PyObject *gmt_read_data ( PyObject *self, PyObject *args)
  
     //Otherwise return the data
     return Py_BuildValue("O", PyCapsule_New(data, NULL, NULL));
+} 
+
+static PyObject *gmt_write_data ( PyObject *self, PyObject *args)
+{
+    const char* name = NULL;
+    void* API = NULL; 
+    PyObject* capsule = NULL;
+    PyObject* py_ptr = NULL;
+    PyObject* py_output = NULL;
+    PyObject* py_wesn = NULL;
+  
+    unsigned int family=0,method,geometry=0,mode=0;
+    double wesn[4];
+    void* ptr = NULL;
+    void* output = NULL;
+    int ret;
+    
+
+    //Parse the argument list
+    if (!PyArg_ParseTuple(args, "OIIIIOOO", &capsule, &family,
+                          &method, &geometry, &mode, &py_wesn,
+                          &py_output, &py_ptr)) return NULL;
+    if (!PyCapsule_CheckExact(capsule)) return NULL;
+
+    //Get the GMT session pointer from the capsule object
+    name = PyCapsule_GetName(capsule);
+    if (!PyCapsule_IsValid(capsule, name)) return NULL;
+    API = PyCapsule_GetPointer(capsule, name);
+    if (!API ) return NULL;
+
+    //Get the pointer from py_ptr
+    if (py_ptr == Py_None) ptr = NULL; 
+    else if (PyCapsule_CheckExact(py_ptr))
+    {
+        const char *tmp = NULL;
+        tmp = PyCapsule_GetName(py_ptr);
+        if (!PyCapsule_IsValid(py_ptr, tmp)) return NULL;
+        ptr =  PyCapsule_GetPointer(py_ptr, name);
+    }
+    else return NULL;
+
+    //Get the pointer from py_output
+    if (py_output == Py_None) return NULL;
+    else if (PyCapsule_CheckExact(py_output))
+    {
+        const char *tmp = NULL;
+        tmp = PyCapsule_GetName(py_output);
+        if (!PyCapsule_IsValid(py_output, tmp)) return NULL;
+        output =  PyCapsule_GetPointer(py_output, tmp);
+    }
+    else if (PyString_Check(py_output))
+    {
+        output = (void*) PyString_AsString(py_output);
+    }
+    else return NULL;
+
+
+    //Read the data
+    ret = GMT_Write_Data(API, family, method, geometry , mode, 
+                         double_ptr_from_list(py_wesn, wesn, 4), output, ptr );
+
+    //Otherwise return the data
+    return Py_BuildValue("i", ret);
 } 
 
 static PyObject *gmt_destroy_data ( PyObject *self, PyObject *args)

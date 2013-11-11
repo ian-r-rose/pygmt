@@ -67,6 +67,12 @@ class GMT_Session:
             raise GMT_Error("Could not read data")
         return data
 
+    def write_data(self,family, method, geometry, mode, wesn, input, data):
+        ret = _api.gmt_write_data(self.session_ptr, family, method, geometry, mode, wesn, output, data)
+        if ret != 0:
+            raise GMT_Error("Couldn't write data, error code %i" % ret)
+        return data
+
     def call_module(self, module, args, mode=module_mode['cmd']):
         ret = _api.gmt_call_module(self.session_ptr, module, mode, args)
   

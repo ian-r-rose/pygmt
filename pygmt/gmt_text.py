@@ -34,6 +34,8 @@ class GMT_Text (gmt_base_types.GMT_Resource):
             self.in_id = self._session.register_io(io_family['textset'], io_method['reference'],\
                                               io_geometry['point'], io_direction['in'], None, data)
             self.in_str = '-<'+self._session.encode_id(self.in_id)
+
+        self.direction = io_direction['in']
             
 
     def register_output(self, output = None):
@@ -52,6 +54,8 @@ class GMT_Text (gmt_base_types.GMT_Resource):
 
         else:
             raise api.GMT_Error("Text output format not implemented")
+
+        self.direction = io_direction['out']
 
 
 

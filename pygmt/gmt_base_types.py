@@ -16,6 +16,7 @@ class GMT_Resource:
         self.out_str = ''
         assert( isinstance(session, api.GMT_Session) )
         self._session = session
+        self.direction = io_direction['err']
 
     def register_input(self, input = None):
         raise api.GMT_Error("Base class method not implemented")

@@ -49,12 +49,17 @@ class GMT_Figure_base:
             close_options = ' '.join([self.proj_opt, self.range_opt, '-T -O', self.ps_output])
             self._gmt_session.call_module('psxy', close_options)
 
-    def _print_call(self, str):
+    def _print_call(self, string):
         '''
         Debug output for printing the options given to GMT modules
         '''
         if self.verbosity >= 0:
-            print(str)
+            print(string)
+
+    def read_grid(self, gridfile):
+        g = gmt_types.GMT_Grid(self._gmt_session)
+        g.register_input(gridfile)
+        return g
 
     def _grid_dataset(self, module, options, input, output):
         
@@ -73,3 +78,4 @@ class GMT_Figure_base:
 
         return g        
 
+ 

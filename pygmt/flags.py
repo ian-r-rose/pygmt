@@ -51,6 +51,12 @@ io_grid_mode = { 'real'              : 0 ,
                  'row_by_row'        : 32 ,
                  'row_by_row_manual' : 64  }
 
+io_dataset_mode = { 'write_ogr'           : -1 ,
+                    'write_set'           :  0 ,
+                    'write_table'         :  1 ,
+                    'write_segment'       :  2 ,
+                    'write_table_segment' :  3  }
+
 io_cpt_mode = { 'cpt'     : 0 ,
                 'default' : 2 ,
                 'hilo'    : 4  }

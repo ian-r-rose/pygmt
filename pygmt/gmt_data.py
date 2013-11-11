@@ -54,6 +54,8 @@ class GMT_Dataset (gmt_base_types.GMT_Resource):
         else:
             raise api.GMT_Error("Unsupported input type") 
 
+        self.direction = io_direction['in']
+
     def register_output(self, output=None):
         '''
         Determine what kind of output for a module to perform.  It may already have
@@ -89,6 +91,8 @@ class GMT_Dataset (gmt_base_types.GMT_Resource):
             raise api.GMT_Error("This module does not support output to specific GMT Resources")
         else:
             raise api.GMT_Error("Unsupported output type") 
+
+        self.direction = io_direction['out']
             
 
 class GMT_Vector:
