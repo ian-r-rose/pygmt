@@ -72,7 +72,7 @@ class GMT_Figure_base:
         g.register_output(output)
 
         #perform the gridding
-        grid_opts = ' '.join([d.in_str, g.out_str, options])
+        grid_opts = ' '.join([d.in_str, '-G'+g.out_str, options])
         self._print_call(module+' '+grid_opts)
         self._gmt_session.call_module(module, grid_opts)
 

@@ -15,14 +15,21 @@ class GMT_Grid( gmt_base_types.GMT_Resource ):
     def register_input(self, input = None):
 
         if input == None:
-            if input.direction == io_direction['out'] and input.out_id == -1:
+            if self.direction == io_direction['out'] and self.out_id == -1:
                 raise api.GMT_Error("Input grid empty")
-            data = self._session.retrieve_data(self.out_id)
-            self.in_id = self._session.register_io(io_family['grid'], io_method['reference'],\
-                                              io_geometry['surface'], io_direction['in'], None, data)
-            self.in_str = '-<'+self._session.encode_id(self.in_id)
+            elif self.direction == io_direction['err']:
+                raise api.GMT_Error("Input grid empty")
+            elif self.direction == io_direction['in']:  #already registered for input
+                pass
+            else:
+                print self.out_id, self.out_str
+                data = self._session.retrieve_data(self.out_id)
+                self.in_id = self._session.register_io(io_family['grid'], io_method['reference'],\
+                                                       io_geometry['surface'], io_direction['in'], None, data)
+                self.in_str = '-<'+self._session.encode_id(self.in_id)
+                print self.in_id, self.in_str
 
-        if isinstance(input, GMT_Grid):
+        elif isinstance(input, GMT_Grid):
             if input.direction == io_direction['out'] and input.out_id == -1:
                 raise api.GMT_Error("Input grid empty")
             elif input.direction == io_direction['err']:
@@ -55,12 +62,12 @@ class GMT_Grid( gmt_base_types.GMT_Resource ):
         if output == None:
             self.out_id = self._session.register_io(io_family['grid'], io_method['reference'],\
                                                io_geometry['surface'], io_direction['out'], None, None)
-            self.out_str = '-G'+self._session.encode_id(self.out_id)
+            self.out_str = self._session.encode_id(self.out_id)
 
         elif isinstance(output, str) == True:
             self.out_id = self._session.register_io(io_family['grid'], io_method['file'],\
                                                io_geometry['surface'], io_direction['out'], None, output)
-            self.out_str = '-G'+self._session.encode_id(self.out_id)
+            self.out_str = self._session.encode_id(self.out_id)
 
         else:
             raise api.GMT_Error("Grid output format not implemented")

@@ -3,7 +3,7 @@ import api
 from flags import *
 
 
-class GMT_Resource:
+class GMT_Resource(object):
     '''
     Abstract base class for GMT resources, defining the
     interface.  You should not need to deal directly with
