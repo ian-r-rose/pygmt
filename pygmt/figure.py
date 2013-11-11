@@ -64,6 +64,16 @@ class GMT_Figure(GMT_Figure_base):
         self._print_call('grdimage '+module_options)
         self._gmt_session.call_module('grdimage', module_options)
 
+    def grdvector(self, options, grid1, grid2):
+        g1 = gmt_types.GMT_Grid(self._gmt_session)
+        g2 = gmt_types.GMT_Grid(self._gmt_session)
+        g1.register_input(grid1)
+        g2.register_input(grid2)
+
+        module_options = ' '.join([g1.in_str, g2.in_str, options, self.autopilot_options])
+        self._print_call('grdvector '+module_options)
+        self._gmt_session.call_module('grdvector', module_options)
+
     ### All the GMT modules that plot without needing input data
  
     def pscoast(self,options):

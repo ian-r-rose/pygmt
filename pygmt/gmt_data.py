@@ -45,7 +45,7 @@ class GMT_Dataset (gmt_base_types.GMT_Resource):
 
 
         #if it is some other GMT resource, throw an error
-        elif isinstance(input, GMT_Resource) and isinstance(input, GMT_Dataset) == False:
+        elif isinstance(input, gmt_base_types.GMT_Resource) and isinstance(input, GMT_Dataset) == False:
             raise api.GMT_Error("This module does not support GMT resources other than Datasets")
 
         elif input == None:
@@ -85,7 +85,7 @@ class GMT_Dataset (gmt_base_types.GMT_Resource):
         #If it is a GMT_vector, or GMT_grid, throw an error, as we don't want to write that.
         elif isinstance(output, GMT_Vector):
             raise api.GMT_Error("This module does not support output of type GMT_Vector")
-        elif isinstance(output, GMT_Resource):
+        elif isinstance(output, gmt_base_types.GMT_Resource):
             raise api.GMT_Error("This module does not support output to specific GMT Resources")
         else:
             raise api.GMT_Error("Unsupported output type") 
