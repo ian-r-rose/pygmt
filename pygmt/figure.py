@@ -13,6 +13,8 @@ class GMT_Figure(GMT_Figure_base):
     setting up, and tearing down.  Here we just want to define
     all the normal GMT modules.
     ''' 
+    def gmtset(self, options):
+        self._gmt_session.call_module('gmtset', options)
 
     ### All the GMT modules for creating, writing, reading, and
     ### converting gridded data
@@ -34,6 +36,19 @@ class GMT_Figure(GMT_Figure_base):
         self._print_call('grdcut '+module_options)
         self._gmt_session.call_module('grdcut', module_options)
         return g2
+
+    def grdgradient(self, options, input, output = None):
+        g1 = gmt_grid.GMT_Grid(self._gmt_session)
+        g1.register_input(input)
+
+        g2 = gmt_grid.GMT_Grid(self._gmt_session)
+        g2.register_output(output)
+
+        module_options = ' '.join([g1.in_str, options, '-G'+g2.out_str])
+        self._print_call('grdgradient '+module_options)
+        self._gmt_session.call_module('grdgradient', module_options)
+        return g2
+        
         
     def grdinfo(self, options, input, output=None):
         g = gmt_grid.GMT_Grid(self._gmt_session)

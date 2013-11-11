@@ -1,4 +1,6 @@
 *.cfg
+*.conf
+*.pdf
 *.swp
 build/*
 *.pyc

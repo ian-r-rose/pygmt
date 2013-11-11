@@ -22,12 +22,10 @@ class GMT_Grid( gmt_base_types.GMT_Resource ):
             elif self.direction == io_direction['in']:  #already registered for input
                 pass
             else:
-                print self.out_id, self.out_str
                 data = self._session.retrieve_data(self.out_id)
                 self.in_id = self._session.register_io(io_family['grid'], io_method['reference'],\
                                                        io_geometry['surface'], io_direction['in'], None, data)
                 self.in_str = '-<'+self._session.encode_id(self.in_id)
-                print self.in_id, self.in_str
 
         elif isinstance(input, GMT_Grid):
             if input.direction == io_direction['out'] and input.out_id == -1:
