@@ -14,6 +14,7 @@
 #include <Python.h>
 #include <numpy/arrayobject.h>
 #include <gmt.h>
+#include "capsulethunk.h"
 
 
 
