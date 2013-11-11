@@ -1,23 +1,5 @@
 from flags import *
 import _api
-import ctypes
-
-# import the GMT 5 library.  Must be a shared library.
-# Should have a better way of locating it later
-libgmt = ctypes.CDLL("libgmt.so")
-
-
-class GMT_Pointer(ctypes.c_void_p):
-    '''
-    Unusual construct, but this is a type for storing the
-    gmt session pointer.  It is exactly the same as the c_void_p
-    type, which is just the normal void* in C.  We want to subclass
-    this because the Python automatically converts the return
-    value of void* to long int.  We'd rather avoid this casting
-    and keep it as a c_void_p, and this subclassing accomplishes that.
-    Also, kind of nice to work with richer types.
-    '''
-    pass
 
 
 class GMT_Error(Exception):

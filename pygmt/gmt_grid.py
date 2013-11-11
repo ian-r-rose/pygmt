@@ -1,4 +1,3 @@
-import ctypes
 import numpy as np
 import _gmt_structs
 import api
@@ -58,19 +57,4 @@ class GMT_Grid( gmt_base_types.GMT_Resource ):
 
         else:
             raise api.GMT_Error("Grid output format not implemented")
-
-
-class GMT_Matrix:
-    '''
-    Class for storing GMT_MATRIX objects. Not working
-    '''
-    def __init__(self, x,y,array):
-        if not isinstance(array, np.ndarray):
-            raise api.GMT_Error("Must pass in a numpy matrix to GMT_Matrix")
-
-        self.ptr = ctypes.c_void_p(_gmt_structs.gmt_matrix_from_array(array, (np.amin(x),np.amax(x),np.amin(y),np.amax(y),0,0)))
-
-    def __del__(self):
-        _gmt_structs.free_gmt_matrix(long(self.ptr.value))
-
 

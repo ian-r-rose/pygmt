@@ -2,7 +2,6 @@ import _gmt_structs
 import api
 from flags import *
 import gmt_base_types
-import ctypes
 
 
 class GMT_Text (gmt_base_types.GMT_Resource):

@@ -2,7 +2,6 @@ import api
 import gmt_types
 from flags import *
 import numpy as np
-import ctypes
 from figure_base import GMT_Figure_base
 
 

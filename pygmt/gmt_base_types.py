@@ -1,4 +1,3 @@
-import ctypes
 import numpy as np
 import api
 from flags import *
