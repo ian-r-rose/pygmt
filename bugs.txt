@@ -11,3 +11,7 @@ instead of cleaning up after ourselves.
 
 grdcontour segfaults when there are tic-marks and the contours are not closed.
 
+psxy cannot read data tables from memory when plotting lines/polygons due to
+the GMT_Read_Data command for that case not specifying the correct input source.
+Instead, it specifies no input, so GMT looks for a single registered input,
+finds several, and complains.
