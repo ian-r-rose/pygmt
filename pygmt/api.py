@@ -1,4 +1,5 @@
 from flags import *
+import _api
 import ctypes
 
 # import the GMT 5 library.  Must be a shared library.
@@ -39,115 +40,59 @@ class GMT_Session:
     GMT C API, but with Python types where appropriate.
     '''
     def __init__(self, name ="tmp"):
-        # set up the wrapper for GMT_Create_Session
-        GMT_Create_Session = libgmt.GMT_Create_Session
-        GMT_Create_Session.restype = GMT_Pointer
-
-        #create the session
-        self.session_ptr = GMT_Create_Session(name, 2, 0, None)
-        self.session_name = name
-        
-        if self.session_ptr == None:
-            raise GMT_Error("Couldn't create session")
+         self.session_ptr = _api.gmt_create_session(name)
+      
  
     def __del__(self):
-        #clean up the session
-#        ret = libgmt.GMT_Destroy_Session(self.session_ptr) 
-  
-#        if ret == 1:
-#            raise GMT_Error("Couldn't destroy session:")
+#        _api.gmt_destroy_session(self.session_ptr)
         pass
 
-    def _c_wesn(self, wesn):
-        
-        if wesn == None: 
-            return None
-        elif len(wesn) == 4:
-            c_wesn = ctypes.c_double * 4  #One for each bound
-            for i in range(4):
-                c_wesn[i] = wesn[i]
-            return ctypes.byref(c_wesn)
-        raise GMT_Error("Don't understand the wesn argument")
-
     def register_io(self, family, method, geometry, direction, wesn, ptr):
-        GMT_Register_IO = libgmt.GMT_Register_IO
-        GMT_Register_IO.restype = int
-        GMT_Register_IO.argtypes = [GMT_Pointer, ctypes.c_uint, ctypes.c_uint, ctypes.c_uint,\
-                           ctypes.c_uint, ctypes.POINTER(ctypes.c_double), ctypes.c_void_p]
-        id_num = GMT_Register_IO(self.session_ptr, family, method, geometry,\
+        id_num = _api.gmt_register_io(self.session_ptr, family, method, geometry,\
                                     direction, wesn, ptr)
-       
         if id_num == -1:
             raise GMT_Error("Couldn't register IO object")
         return id_num
 
     def encode_id(self, id_num):
-        filename = ctypes.create_string_buffer(16) #need at least 16 bytes for the id string
-        ret = libgmt.GMT_Encode_ID(self.session_ptr, filename, id_num)
+        ret, id_str = _api.gmt_encode_id(self.session_ptr, id_num)
  
         if ret == 1:
             raise GMT_Error("Invalid ID for encoding")
-        return filename.value
+        return id_str
 
     def retrieve_data(self, id_num):
-        GMT_Retrieve_Data = libgmt.GMT_Retrieve_Data
-        GMT_Retrieve_Data.restype = GMT_Pointer
-        GMT_Retrieve_Data.argtypes = [GMT_Pointer, ctypes.c_uint] 
-        
-        ptr = GMT_Retrieve_Data(self.session_ptr, id_num)
-
+        ptr = _api.gmt_retrieve_data(self.session_ptr, id_num)
         if ptr == None:
-            raise GMT_Error("Couldn't retrieve data")
+            raise GMT_Error("Could not retrieve data")
         return ptr 
 
     def create_data(self, family, geometry, mode, par, wesn, inc, registration, pad, ptr):
-        GMT_Create_Data=libgmt.GMT_Create_Data
-        GMT_Create_Data.restype = GMT_Pointer
-        GMT_Create_Data.argtypes = [GMT_Pointer, ctypes.c_uint, ctypes.c_uint, ctypes.c_uint, \
-                                    ctypes.POINTER(ctypes.c_ulonglong), ctypes.POINTER(ctypes.c_double), \
-                                    ctypes.POINTER(ctypes.c_double), ctypes.c_uint, ctypes.c_int, ctypes.c_void_p]
-        new_data_obj = GMT_Create_Data(self.session_ptr, family, geometry, mode, par, wesn, inc, registration, pad, ptr)
+        new_data_obj = _api.gmt_create_data(self.session_ptr, family, geometry,\
+                         mode, par, wesn, inc, registration, pad, ptr)
         if new_data_obj == None:
-            raise GMT_Error("Couldn't create data")
+            raise GMT_Error("Could not create data")
         return new_data_obj
 
     def destroy_data(self, data):
-        GMT_Destroy_Data = libgmt.GMT_Destroy_Data
-        GMT_Destroy_Data.restype = int
-        GMT_Destroy_Data.argtypes = [GMT_Pointer, ctypes.c_void_p]
-        
-        ret = GMT_Destroy_Data(self.session_ptr, data)
+        ret = _api.gmt_destroy_data(self.session_ptr, data)
         if ret != 0:
-            raise GMT_Error("Couldn't destory data")
+            raise GMT_Error("Couldn't destory data, error code %i" % ret)
 
     def read_data(self,family, method, geometry, mode, wesn, input, ptr):
-        GMT_Read_Data = libgmt.GMT_Read_Data
-        GMT_Read_Data.restype = GMT_Pointer
-        GMT_Read_Data.argtypes = [GMT_Pointer, ctypes.c_uint, ctypes.c_uint, ctypes.c_uint, ctypes.c_uint,\
-                                  ctypes.POINTER(ctypes.c_double), ctypes.c_char_p, ctypes.c_void_p]
-        data = GMT_Read_Data(self.session_ptr, family, method, geometry, mode, self._c_wesn(wesn), input, ptr)
+        data = _api.gmt_read_data(self.session_ptr, family, method, geometry, mode, wesn, input, ptr)
         if data == None:
-            raise GMT_Error("Couldn't read data")
+            raise GMT_Error("Could not read data")
         return data
 
-    def write_data(self, family, method, geometry, mode, wesn, output, data):
-        GMT_Write_Data = libgmt.GMT_Write_Data
-        GMT_Write_Data.argtypes = [GMT_Pointer, ctypes.c_uint, ctypes.c_uint, ctypes.c_uint, ctypes.c_uint,\
-                                  ctypes.POINTER(ctypes.c_double), ctypes.c_void_p, ctypes.c_void_p]
-        ret = libgmt.GMT_Write_Data(self.session_ptr, family, method, geometry,\
-                                    mode, self._c_wesn(wesn), output, data)
-        if ret != 0:
-            raise GMT_Error("Couldn't write data") 
-
     def call_module(self, module, args, mode=module_mode['cmd']):
-        ret = libgmt.GMT_Call_Module(self.session_ptr, module, mode, args)
+        ret = _api.gmt_call_module(self.session_ptr, module, mode, args)
   
         if ret == -1:
             raise GMT_Error("Problem calling module " + str(module))
    
     def option(self, options):
-        ret = libgmt.GMT_Option(self.session_ptr, options)
-
+         ret = _api.gmt_option(self.session_ptr, options)
 
 
 

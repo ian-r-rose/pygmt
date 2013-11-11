@@ -1,4 +1,3 @@
-import ctypes
 import numpy as np
 import _gmt_structs
 import api
@@ -26,16 +25,10 @@ class GMT_Dataset (gmt_base_types.GMT_Resource):
         elif isinstance(input, file) == True:
             raise api.GMT_Error("Please give filename instead of open file object")
 
-        #If it is a GMT_vector, just register that.
-        elif isinstance(input, GMT_Vector):
-            self.in_id = self._session.register_io(io_family['dataset'], io_method['reference']+io_approach['via_vector'],\
-                                          io_geometry['point'], io_direction['in'],\
-                                          None, input.ptr)
-            self.in_str = '-<'+self._session.encode_id(self.in_id)
 
         #if it is a list of numpy arrays, make a GMT_Vector object out of them and register
         elif isinstance(input, list):
-            self.vec = GMT_Vector( input )
+            self.vec = GMT_Vector( self._session, input )
             self.in_id = self._session.register_io(io_family['dataset'], io_method['reference']+io_approach['via_vector'],\
                                           io_geometry['point'], io_direction['in'],\
                                           None, self.vec.ptr)
@@ -104,7 +97,8 @@ class GMT_Vector:
     you give it a list of 1D or 2D numpy arrays.  It then constructs
     a GMT_VECTOR which GMT knows how to read.
     '''
-    def __init__(self, arrays):
+    def __init__(self, session, arrays):
+        self._session = session
         tmp_arrays = []
         if not isinstance(arrays, list):
             raise api.GMT_Error("Must pass in a list of arrays to GMT_Vector")
@@ -118,12 +112,16 @@ class GMT_Vector:
             if a.ndim == 2:
                 tmp_arrays.append( a.flatten() )
 
+
         if not tmp_arrays:
             self.array_list = arrays
-            self.ptr = ctypes.c_void_p(_gmt_structs.gmt_vector_from_array_list(arrays))
         else:
-            self.array_list = tmp_arrays
-            self.ptr = ctypes.c_void_p(_gmt_structs.gmt_vector_from_array_list(tmp_arrays))
+            self.array_list = arrays
+
+        par = [len(self.array_list),len(self.array_list[0])]
+        self.ptr = self._session.create_data( io_family['vector'], io_geometry['point'],\
+                                                  0, par, None, None, 0, -1, None)
+        _gmt_structs.gmt_vector_from_array_list(self.ptr, self.array_list)
            
 
     def __del__(self):

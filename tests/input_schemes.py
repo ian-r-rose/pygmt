@@ -12,7 +12,7 @@ fig.pscoast('-Glightgray -A500')
 fig.psbasemap('-B30g30/15g15') 
 
 #First, pass the numpy arrays
-fig.psxy('-Sci', pygmt.GMT_Vector([lons+50,lats,size]))
+fig.psxy('-Sci', [lons+50,lats,size])
 fig.pswiggle('-W -Z1c', [lons+200,lats,size])
 
 #second, pass a text string indicating a file

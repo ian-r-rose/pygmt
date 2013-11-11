@@ -22,9 +22,6 @@
 static PyObject *gmt_vector_from_array_list ( PyObject *self, PyObject *args);
 static PyObject *free_gmt_vector ( PyObject *self, PyObject *args);
 
-static PyObject *gmt_matrix_from_array ( PyObject *self, PyObject *args);
-static PyObject *free_gmt_matrix ( PyObject *self, PyObject *args);
-
 static PyObject *gmt_textset_from_string_list ( PyObject *self, PyObject *args);
 static PyObject *free_gmt_textset ( PyObject *self, PyObject *args);
 
@@ -33,8 +30,6 @@ void init_gmt_structs(void);
 static PyMethodDef _gmt_structsMethods[] = {
     {"gmt_vector_from_array_list", gmt_vector_from_array_list, METH_VARARGS},
     {"free_gmt_vector", free_gmt_vector, METH_VARARGS},
-    {"gmt_matrix_from_array", gmt_matrix_from_array, METH_VARARGS},
-    {"free_gmt_matrix", free_gmt_matrix, METH_VARARGS},
     {"gmt_textset_from_string_list", gmt_textset_from_string_list, METH_VARARGS},
     {"free_gmt_textset", free_gmt_textset, METH_VARARGS},
     {NULL, NULL}
@@ -56,13 +51,14 @@ static PyObject *gmt_vector_from_array_list ( PyObject *self, PyObject *args)
     unsigned long n_cols;
     unsigned long n_rows;
 
+    PyObject* py_vec;
     PyObject* array_list;
     PyArrayObject* array;
     double *array_data;
     unsigned int i;
 
     //Parse a list of numpy arrays
-    if (!PyArg_ParseTuple(args, "O!", &PyList_Type, &array_list)) return NULL;
+    if (!PyArg_ParseTuple(args, "OO!", &py_vec, &PyList_Type, &array_list)) return NULL;
 
     //throw error if the size of the list doesn't make sense
     n_cols = PyList_Size(array_list);
@@ -72,10 +68,7 @@ static PyObject *gmt_vector_from_array_list ( PyObject *self, PyObject *args)
 
 
     //Allocate memory for the GMT_VECTOR
-    struct GMT_VECTOR *vector;
-    vector = (struct GMT_VECTOR *)malloc(sizeof(struct GMT_VECTOR));
-    vector->type = (enum GMT_enum_type *)malloc(sizeof(enum GMT_enum_type)*n_cols);
-    vector->data = (union GMT_UNIVECTOR *)malloc(sizeof(union GMT_UNIVECTOR)*n_cols);
+    struct GMT_VECTOR *vector = (struct GMT_VECTOR*) PyCapsule_GetPointer(py_vec, NULL);
     vector->n_columns = n_cols;
     vector->n_rows = n_rows;
     vector->alloc_mode= GMT_ALLOCATED_EXTERNALLY;
@@ -92,34 +85,25 @@ static PyObject *gmt_vector_from_array_list ( PyObject *self, PyObject *args)
          
         Py_INCREF( (PyObject*) array);
     }
-    //Return a pointer of sorts (actually a Python Long, which
-    //should be cast to a ctypes.c_void_p in python
-    return Py_BuildValue("O", PyLong_FromVoidPtr( (void *)vector));
+    
+    return Py_None;
 } 
 
 //Free the memory allocated for a GMT_Vector.
 //Does not free the numpy array to which it points
 static PyObject *free_gmt_vector ( PyObject *self, PyObject *args)
 {
-    struct GMT_VECTOR *vector;
-    PyObject* ref;
     PyObject* array_list;
     unsigned int n_cols;
     unsigned int i;
 
-    if (!PyArg_ParseTuple(args, "O!O!", &PyLong_Type, &ref, &PyList_Type, &array_list)) return NULL;
+    if (!PyArg_ParseTuple(args, "O!", &PyList_Type, &array_list)) return NULL;
 
     n_cols = PyList_Size(array_list);
     if (n_cols <=0) return NULL;
     for (i=0; i<n_cols; i++)
         Py_DECREF(PyList_GetItem(array_list, i));
      
-    vector = (struct GMT_VECTOR *)PyLong_AsVoidPtr(ref);
-
-    free(vector->type); vector->type = NULL;
-    free(vector->data); vector->data = NULL;
-    free(vector);   
-
     return Py_None;
 }
 
@@ -136,13 +120,13 @@ static PyObject *gmt_textset_from_string_list ( PyObject *self, PyObject *args)
     unsigned int i;
 
     //Parse a list of strings
-    if (!PyArg_ParseTuple(args, "O!O!", &PyLong_Type, &textset, &PyList_Type, &string_list)) return NULL;
+    if (!PyArg_ParseTuple(args, "OO!", &textset, &PyList_Type, &string_list)) return NULL;
 
     //throw error if the size of the list doesn't make sense
     n_records = PyList_Size(string_list);
     if (n_records <=0) return NULL;
 
-    set = (struct GMT_TEXTSET *)PyLong_AsVoidPtr(textset);
+    set = (struct GMT_TEXTSET *)PyCapsule_GetPointer(textset, NULL);
     table = set->table[0];
     segment = table->segment[0];
 
@@ -185,68 +169,3 @@ static PyObject *free_gmt_textset ( PyObject *self, PyObject *args)
     return Py_None;
 } 
 
-
-static PyObject *gmt_matrix_from_array ( PyObject *self, PyObject *args)
-{
-    unsigned long n_cols;
-    unsigned long n_rows;
-
-    double range[6];
-
-    PyArrayObject* array;
-    double *array_data;
-    unsigned int i;
-
-    //Parse a list of numpy arrays
-    if (!PyArg_ParseTuple(args, "O!(dddddd)", &PyArray_Type, &array, 
-                          &range[0], &range[1], &range[2], &range[3],
-                          &range[4], &range[5])) return NULL;
-
-    //throw error if the size of the list doesn't make sense
-    n_rows = PyArray_DIMS(array)[0];
-    n_cols = PyArray_DIMS(array)[1];
-    if (n_rows <=0 || n_cols <=0) return NULL;
-
-
-    //Allocate memory for the GMT_MATRIX
-    struct GMT_MATRIX *matrix;
-    matrix = (struct GMT_MATRIX *)malloc(sizeof(struct GMT_MATRIX));
-    matrix->n_columns = n_cols;
-    matrix->n_rows = n_rows;
-    matrix->alloc_mode= GMT_ALLOCATED_EXTERNALLY;
-    matrix->shape = 0; 
-    matrix->size = sizeof(double)*n_rows*n_cols; 
-    matrix->n_layers = 1.0;
-
-    array_data = (double *)PyArray_DATA(array);
-
-    matrix->type = (enum GMT_enum_type)GMT_DOUBLE;
-    matrix->data = (union GMT_UNIVECTOR)array_data;
-    for (i=0; i<6; ++i)
-        matrix->range[i] = range[i];
-
-//    for (unsigned int i=0; i<n_rows*n_cols; ++i)
-//        printf("%lf\n", matrix->data.f8[i]);
-//    printf("%lf, %lf, %lf, %lf\n", matrix->range[0], matrix->range[1], matrix->range[2], matrix->range[3]);
-
-//    printf("%i, %i\n", n_rows, n_cols);
-
-    //Return a pointer of sorts (actually a Python Long, which
-    //should be cast to a ctypes.c_void_p in python
-    return Py_BuildValue("O", PyLong_FromVoidPtr( (void *)matrix));
-} 
-
-//Free the memory allocated for a GMT_Vector.
-//Does not free the numpy array to which it points
-static PyObject *free_gmt_matrix ( PyObject *self, PyObject *args)
-{
-    struct GMT_MATRIX *matrix;
-    PyObject *ref;
-
-    if (!PyArg_ParseTuple(args, "O!", &PyLong_Type, &ref)) return NULL;
-
-    matrix = (struct GMT_MATRIX *)PyLong_AsVoidPtr(ref);
-    free(matrix);
-
-    return Py_None;
-}

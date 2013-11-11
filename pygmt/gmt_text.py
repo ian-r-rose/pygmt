@@ -70,17 +70,15 @@ class GMT_Textset:
         self.string_list = input
    
         #create the textset using the GMT API
-        n_records = long(len(input))
-        par = (ctypes.c_ulonglong*3)(1,1,n_records)
+        par = [1,1,len(input)]
         self.ptr = self._session.create_data( io_family['textset'], io_geometry['point'],\
-                                              0, ctypes.cast(par, ctypes.POINTER(ctypes.c_ulonglong)),\
-                                              None, None, 0, -1, None)
+                                              0, par, None, None, 0, -1, None)
         #assign the memory locations to the internal c strings
-        ctypes.c_void_p(_gmt_structs.gmt_textset_from_string_list(long(self.ptr.value), input))
+        _gmt_structs.gmt_textset_from_string_list(self.ptr, input)
 
 
     def __del__(self):
         _gmt_structs.free_gmt_textset(self.string_list)
-#        self._session.destroy_data( self.ptr )
+#        self._session.destroy_data( self.ptr)
 
 
