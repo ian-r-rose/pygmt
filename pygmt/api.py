@@ -26,7 +26,7 @@ class GMT_Session:
       
  
     def __del__(self):
-#        _api.gmt_destroy_session(self.session_ptr)
+        _api.gmt_destroy_session(self.session_ptr)
         pass
 
     def register_io(self, family, method, geometry, direction, wesn, ptr):

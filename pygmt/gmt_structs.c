@@ -95,16 +95,23 @@ static PyObject *gmt_vector_from_array_list ( PyObject *self, PyObject *args)
 static PyObject *free_gmt_vector ( PyObject *self, PyObject *args)
 {
     PyObject* array_list;
+    PyObject* array;
+    PyObject* py_vec;
     unsigned int n_cols;
     unsigned int i;
 
-    if (!PyArg_ParseTuple(args, "O!", &PyList_Type, &array_list)) return NULL;
+    if (!PyArg_ParseTuple(args, "OO!", &py_vec, &PyList_Type, &array_list)) return NULL;
+
+    struct GMT_VECTOR *vector = (struct GMT_VECTOR*) PyCapsule_GetPointer(py_vec, NULL);
 
     n_cols = PyList_Size(array_list);
     if (n_cols <=0) return NULL;
     for (i=0; i<n_cols; i++)
-        Py_DECREF(PyList_GetItem(array_list, i));
-     
+    {
+        vector->data[i] = (union GMT_UNIVECTOR)(double*) NULL;
+        array = PyList_GetItem(array_list, i);
+        Py_DECREF(array);
+    } 
     return Py_None;
 }
 
@@ -148,22 +155,30 @@ static PyObject *free_gmt_textset ( PyObject *self, PyObject *args)
 {
     unsigned long n_records;
 
+    PyObject* textset;
     PyObject* string_list;
     PyObject* string;
     unsigned int i;
 
-    //Parse a list of numpy arrays
-    if (!PyArg_ParseTuple(args, "O!", &PyList_Type, &string_list)) return NULL;
+    struct GMT_TEXTSET* set;
+    struct GMT_TEXTTABLE* table;
+    struct GMT_TEXTSEGMENT *segment; 
 
-    //throw error if the size of the list doesn't make sense
+    //Parse a list of numpy arrays
+    if (!PyArg_ParseTuple(args, "OO!", &textset, &PyList_Type, &string_list)) return NULL;
+
     n_records = PyList_Size(string_list);
-    if (n_records <=0) return NULL;
+
+    set = (struct GMT_TEXTSET *)PyCapsule_GetPointer(textset, NULL);
+    table = set->table[0];
+    segment = table->segment[0];
 
 
     //Loop over the columns and point each data pointer to the data
     //in the numpy array. 
     for (i=0; i<n_records; i++)
     {
+        segment->record[i] = NULL;
         string = PyList_GetItem(string_list, i);
         Py_DECREF( string );
     }

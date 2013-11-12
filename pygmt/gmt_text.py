@@ -58,12 +58,12 @@ class GMT_Text (gmt_base_types.GMT_Resource):
         self.direction = io_direction['out']
 
 
+import sys
 
 class GMT_Textset:
     
     def __init__(self, session, input):
         self._session = session
-         
          # do some type checking
         if isinstance( input, list) == False:
             raise api.GMT_Error("Textset must be given a list of strings")
@@ -73,15 +73,14 @@ class GMT_Textset:
         self.string_list = input
    
         #create the textset using the GMT API
-        par = [1,1,len(input)]
+        par = [1,1,len(self.string_list)]
         self.ptr = self._session.create_data( io_family['textset'], io_geometry['point'],\
                                               0, par, None, None, 0, -1, None)
         #assign the memory locations to the internal c strings
-        _gmt_structs.gmt_textset_from_string_list(self.ptr, input)
-
+        _gmt_structs.gmt_textset_from_string_list(self.ptr, self.string_list)
 
     def __del__(self):
-        _gmt_structs.free_gmt_textset(self.string_list)
-#        self._session.destroy_data( self.ptr)
+        _gmt_structs.free_gmt_textset(self.ptr, self.string_list)
+        self._session.destroy_data( self.ptr)
 
 

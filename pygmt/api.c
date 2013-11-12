@@ -472,7 +472,7 @@ static PyObject *gmt_destroy_data ( PyObject *self, PyObject *args)
     }
     else return NULL;
     
-    ret = GMT_Destroy_Data(API, ptr);
+    ret = GMT_Destroy_Data(API, &ptr);
 
     return Py_BuildValue("i", ret);
 }

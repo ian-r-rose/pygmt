@@ -129,6 +129,7 @@ class GMT_Vector:
            
 
     def __del__(self):
-#        _gmt_structs.free_gmt_vector(long(self.ptr.value), self.array_list)
-        pass
+        _gmt_structs.free_gmt_vector(self.ptr, self.array_list)
+        self._session.destroy_data( self.ptr)
+
 
