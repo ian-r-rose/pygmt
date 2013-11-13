@@ -112,6 +112,7 @@ static PyObject *free_gmt_vector ( PyObject *self, PyObject *args)
         array = PyList_GetItem(array_list, i);
         Py_DECREF(array);
     } 
+    vector->alloc_mode= GMT_ALLOCATED_EXTERNALLY;  //MINE!
     return Py_None;
 }
 
@@ -138,6 +139,7 @@ static PyObject *gmt_textset_from_string_list ( PyObject *self, PyObject *args)
     table = set->table[0];
     segment = table->segment[0];
 
+    set->alloc_mode = GMT_ALLOCATED_EXTERNALLY;  //MINE!
     //Loop over the columns and point each data pointer to the data
     //in the numpy array. 
     for (i=0; i<n_records; i++)
@@ -182,6 +184,7 @@ static PyObject *free_gmt_textset ( PyObject *self, PyObject *args)
         string = PyList_GetItem(string_list, i);
         Py_DECREF( string );
     }
+    set->alloc_mode = GMT_ALLOCATED_EXTERNALLY;  //MINE!
     return Py_None;
 } 
 
