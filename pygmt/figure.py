@@ -127,6 +127,11 @@ class GMT_Figure(GMT_Figure_base):
         self._print_call('psbasemap '+module_options)
         self._gmt_session.call_module('psbasemap', module_options)
 
+    def psscale(self, options):
+        module_options = ' '.join([options, self.autopilot_options])
+        self._print_call('psscale '+module_options)
+        self._gmt_session.call_module('psscale', module_options)
+    
 
     #All the GMT modules dealing with plotting text or numeric data
    
