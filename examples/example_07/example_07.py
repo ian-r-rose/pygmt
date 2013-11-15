@@ -6,8 +6,8 @@ fig = pygmt.GMT_Figure('example_07.ps', figure_range='-50/0/-10/20', projection=
 fig.pscoast('-Slightblue -GP300/26:FtanBdarkbrown -Dl -Wthinnest -B10 --FORMAT_GEO_MAP=dddF')
 fig.psxy('-Wthinner,-', 'fz.xy')
 fig.psxy('-Wthinnest -Gred -h1 -Sci -i0,1,2s0.01', 'quakes.xym')
-fig.psxy('-Wthin,blue -Sp.03c -Gblue', 'isochron.xy')
-fig.psxy('-Wthicker,orange -Sp.06c -Gorange', 'ridge.xy')
+fig.psxy('-Wthin,blue', 'isochron.xy')
+fig.psxy('-Wthicker,orange', 'ridge.xy')
 
 fig.psxy('-Gwhite -Wthick -A', [ np.array( [-14.5, -2. , -2.,  -14.5] ), \
                                  np.array( [ 15.2,  15.2, 17.8, 17.8] ) ] )

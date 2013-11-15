@@ -151,11 +151,12 @@ class GMT_Figure(GMT_Figure_base):
         Call the GMT psxy module with the text string "options" and the input "input"
         options is a text string of the flags to be given to psxy.
         '''
-        d = gmt_data.GMT_Dataset(self._gmt_session)
+        tmp_session = api.GMT_Session("tmp session")
+        d = gmt_data.GMT_Dataset(tmp_session)
         d.register_input(input)
         module_options = ' '.join([d.in_str,  options, self.autopilot_options])
         self._print_call('psxy '+module_options)
-        self._gmt_session.call_module('psxy', module_options)
+        tmp_session.call_module('psxy', module_options)
 
     def psclip(self,options, input):
         '''
@@ -191,11 +192,12 @@ class GMT_Figure(GMT_Figure_base):
         '''
         Call the GMT pswiggle module with the text string "options"
         '''
-        d = gmt_data.GMT_Dataset(self._gmt_session)
+        tmp_session = api.GMT_Session("tmp session")
+        d = gmt_data.GMT_Dataset(tmp_session)
         d.register_input(input)
         module_options = ' '.join([d.in_str, options, self.autopilot_options])
         self._print_call('pswiggle '+module_options)
-        self._gmt_session.call_module('pswiggle', module_options)
+        tmp_session.call_module('pswiggle', module_options)
 
 
     ### All the GMT modules that do text or data operations without plotting
