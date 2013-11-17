@@ -157,7 +157,6 @@ static PyObject *gmt_option ( PyObject *self, PyObject *args)
     return Py_BuildValue("i", ret);
 } 
 
-//THIS CURRENTLY CAN LEAK MEMORY
 static PyObject *gmt_call_module ( PyObject *self, PyObject *args)
 {
     const char* name = NULL;
@@ -197,11 +196,13 @@ static PyObject *gmt_call_module ( PyObject *self, PyObject *args)
             argv_opts[i] = PyString_AsString(string);
         }
         ret = GMT_Call_Module(API, module, argc, argv_opts);
+        free(argv_opts);
+        
     }
-    else return NULL;
-    free(argv_opts);
+    else return NULL;;
  
     return Py_BuildValue("i", ret);
+
 } 
 
 static PyObject *gmt_register_io ( PyObject *self, PyObject *args)
