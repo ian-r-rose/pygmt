@@ -157,18 +157,21 @@ static PyObject *gmt_option ( PyObject *self, PyObject *args)
     return Py_BuildValue("i", ret);
 } 
 
-
+//THIS CURRENTLY CAN LEAK MEMORY
 static PyObject *gmt_call_module ( PyObject *self, PyObject *args)
 {
     const char* name = NULL;
     void* API = NULL; 
     PyObject* capsule = NULL;
     int mode, ret;
-    char* options = NULL;
+    PyObject* options = NULL;
+    PyObject* string = NULL;
     char* module = NULL;
+    char **argv_opts;
+    unsigned int argc,i;
 
     //Parse the argument list
-    if (!PyArg_ParseTuple(args, "Osis", &capsule, &module, &mode, &options)) return NULL;
+    if (!PyArg_ParseTuple(args, "OsiO", &capsule, &module, &mode, &options)) return NULL;
     if (!PyCapsule_CheckExact(capsule)) return NULL;
 
     //Get the GMT session pointer from the capsule object
@@ -177,8 +180,26 @@ static PyObject *gmt_call_module ( PyObject *self, PyObject *args)
     API = PyCapsule_GetPointer(capsule, name);
     if (!API ) return NULL;
 
-    //Do the actual call
-    ret = GMT_Call_Module(API, module, mode, options);
+    //Decide how to call based on the input options 
+
+    if (mode == GMT_MODULE_EXIST || mode == GMT_MODULE_PURPOSE)
+      ret = GMT_Call_Module(API, module, mode, '\0');
+    else if (mode == GMT_MODULE_OPT) return NULL;
+    else if (PyString_Check(options))
+      ret = GMT_Call_Module(API, module, GMT_MODULE_CMD, PyString_AsString(options));
+    else if ( PyList_Check(options) )
+    {
+        argc = PyList_Size(options);
+        argv_opts = (char**)malloc( argc * sizeof(char*) );
+        for(i=0; i<argc; ++i)
+        {
+            string = PyList_GetItem(options, i);
+            argv_opts[i] = PyString_AsString(string);
+        }
+        ret = GMT_Call_Module(API, module, argc, argv_opts);
+    }
+    else return NULL;
+    free(argv_opts);
  
     return Py_BuildValue("i", ret);
 } 

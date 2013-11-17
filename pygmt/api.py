@@ -1,5 +1,6 @@
 from flags import *
 import _api
+import shlex
 
 
 class GMT_Error(Exception):
@@ -74,7 +75,8 @@ class GMT_Session:
         return data
 
     def call_module(self, module, args, mode=module_mode['cmd']):
-        ret = _api.gmt_call_module(self.session_ptr, module, mode, args)
+        arglist = shlex.split(args)
+        ret = _api.gmt_call_module(self.session_ptr, module, mode, arglist)
   
         if ret == -1:
             raise GMT_Error("Problem calling module " + str(module))
@@ -82,7 +84,7 @@ class GMT_Session:
     def option(self, options):
          ret = _api.gmt_option(self.session_ptr, options)
 
-
+    
 
 if __name__ == "__main__":
 

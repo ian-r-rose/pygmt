@@ -8,7 +8,7 @@ fig.pscoast('-Rg -JH0/6i -X0.25i -Y0.2i -Bg30 -Dc -Glightbrown -Slightblue -K -O
 fig.grdcontour('-JH0/6i -C10 -A50+f7p -Gd4i -L-1000/-1 -Wcthinnest,- -Wathin,- -T0.1i/0.02i -K -O ->>%s' % ps, 'geoid.grd')
 fig.grdcontour('-JH0/6i -C10 -A50+f7p -Gd4i -L-1/1000 -T0.1i/0.02i -K -O ->>%s' % ps, 'geoid.grd')
 
-fig.pscoast('-Rg -JH6i -Y3.4i -Bg30 -B+tLowOrderGeoid -Dc -Glightbrown -Slightblue -K -O ->>%s' % ps)
+fig.pscoast('-Rg -JH6i -Y3.4i -Bg30 -B+t\"Low Order Geoid\" -Dc -Glightbrown -Slightblue -K -O ->>%s' % ps)
 fig.grdcontour('-JH6i -C10 -A50+f7p -Gd4i -L-1000/-1 -Wcthinnest,- -Wathin,- -T0.1i/0.02i:+- -K -O ->>%s' % ps, 'geoid.grd')
 fig.grdcontour('-JH6i -C10 -A50+f7p -Gd4i -L-1/1000 -T0.1i/0.02i:+- -O ->>%s' % ps, 'geoid.grd')
 
