@@ -1,6 +1,8 @@
 # site.cfg file for pygmt #
-
+#
+#Fill in the directories that have the GMT libraries and 
+#include directories below.
 [DEFAULT]
-gmt_lib_directory=/home/ian/local/lib
-gmt_include_directory=/home/ian/local/include/gmt
+gmt_lib_directory=
+gmt_include_directory=
 
