@@ -206,6 +206,16 @@ class GMT_Figure(GMT_Figure_base):
         module_options = ' '.join([g.in_str, options, cpt_output])
         self._print_call('grd2cpt '+module_options)
         self._gmt_session.call_module('grd2cpt', module_options)
+  
+    def gmtconvert(self, options, input, output=None):
+        d = gmt_data.GMT_Dataset(self._gmt_session)
+        d.register_input(input)
+        d.register_output(output)
+ 
+        module_options=' '.join([d.in_str, options, d.out_str])
+        self._print_call('gmtconvert '+module_options)
+        self._gmt_session.call_module('gmtconvert', module_options)
+        return d
 
  
     def makecpt(self, options, outfile):
@@ -220,6 +230,7 @@ class GMT_Figure(GMT_Figure_base):
         d.register_output()
 
         module_options = ' '.join([d.in_str, options, d.out_str])
+        self._print_call('blockmean '+module_options)
         self._gmt_session.call_module('blockmean', module_options)
         return d
          
@@ -229,6 +240,7 @@ class GMT_Figure(GMT_Figure_base):
         d.register_output()
 
         module_options = ' '.join([d.in_str, options, d.out_str])
+        self._print_call('blockmedian '+module_options)
         self._gmt_session.call_module('blockmedian', module_options)
         return d
        
@@ -238,6 +250,7 @@ class GMT_Figure(GMT_Figure_base):
         d.register_output()
 
         module_options = ' '.join([d.in_str, options, d.out_str])
+        self._print_call('blockmode '+module_options)
         self._gmt_session.call_module('blockmode', module_options)
         return d       
 
@@ -247,6 +260,7 @@ class GMT_Figure(GMT_Figure_base):
         d.register_output()
 
         module_options = ' '.join([d.in_str, options, d.out_str])
+        self._print_call('triangulate '+module_options)
         self._gmt_session.call_module('triangulate', module_options)
         return d
          

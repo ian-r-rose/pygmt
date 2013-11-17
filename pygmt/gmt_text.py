@@ -35,6 +35,20 @@ class GMT_Text (gmt_base_types.GMT_Resource):
                                               io_geometry['point'], io_direction['in'], None, data)
             self.in_str = '-<'+self._session.encode_id(self.in_id)
 
+        elif isinstance(input, GMT_Text):
+            if input.direction == io_direction['out'] and input.out_id == -1:
+                raise api.GMT_Error("Input text empty")
+            elif input.direction == io_direction['err']:
+                raise api.GMT_Error("Input text empty")
+            elif input.direction == io_direction['in']:  #already registered for input
+                self.in_id = input.in_id
+                self.in_str = input.in_str 
+            else:  #registered for output ,reregister as input
+                data = self._session.retrieve_data(input.out_id)
+                self.in_id = self._session.register_io(io_family['textset'], io_method['reference'],\
+                                                       io_geometry['point'], io_direction['in'], None, data)
+                self.in_str = '-<'+self._session.encode_id(self.in_id)
+
         self.direction = io_direction['in']
             
 
