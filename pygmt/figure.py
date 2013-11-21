@@ -274,15 +274,17 @@ class GMT_Figure(GMT_Figure_base):
         self._gmt_session.call_module('project', module_options)
         return d
 
-    def fitcircle(self,options, input):
+    def fitcircle(self,options, input, output=None):
         d = gmt_data.GMT_Dataset(self._gmt_session)
         d.register_input( input )
-        d.register_output()
+  
+        t = gmt_text.GMT_Text(self._gmt_session)
+        t.register_output(output)
 
-        module_options = ' '.join([d.in_str, options, d.out_str])
+        module_options = ' '.join([d.in_str, options, t.out_str])
         self._print_call('fitcircle '+module_options)
         self._gmt_session.call_module('fitcircle', module_options)
-        return d
+        return t
 
     
 

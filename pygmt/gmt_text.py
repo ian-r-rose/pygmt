@@ -54,9 +54,9 @@ class GMT_Text (gmt_base_types.GMT_Resource):
 
     def register_output(self, output = None):
         if output == None:
-            self.out_id = self._session.register_io(io_family['textset'], io_method['reference'],\
+            self.out_id = self._session.register_io(io_family['textset'], io_method['duplicate'],\
                                                io_geometry['point'], io_direction['out'], None, None)
-            self.out_str = '->'+self._session.encode_id(self.out_id)
+            self.out_str = '-bo ->'+self._session.encode_id(self.out_id)
 
         elif isinstance(output, str) == True:
             self.out_id = self._session.register_io(io_family['textset'], io_method['file'],\
