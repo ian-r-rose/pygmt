@@ -4,12 +4,6 @@ looks in memory, but cannot find it, because it is, after all, a file.
 
 grdcontour segfaults when there are tic-marks and the contours are not closed.
 
-psxy cannot read data tables from memory when plotting lines/polygons due to
-the GMT_Read_Data command for that case not specifying the correct input source.
-Instead, it specifies no input, so GMT looks for a single registered input,
-finds several, and complains.  This appears to be a problem with pswiggle as
-well.
-
 GMT_Create_Options fails for titles in the -B option because it parses quoted
 titles with spaces in it into separate tokens.  When these titles are passed
 in through the command line, whatever service that parses that into argc, argv
