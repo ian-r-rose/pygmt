@@ -3,6 +3,7 @@
 *.pdf
 *.swp
 build/*
+*.grd
 *.pyc
 *.tmp
 *.history
