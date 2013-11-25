@@ -22,8 +22,8 @@ lats = 90.0-lats*180.0/np.pi
 fig = pygmt.GMT_Figure("output.ps", figure_range='g', projection='G-75/41/7i', verbosity=4)
 dataset = fig.blockmean('-I5/5 -Rg', [lons,lats,vals])
 grid = fig.surface('-I5/5 -Rg', dataset)
-fig.grd2cpt('-Chot', grid, 'pal.cpt')
-fig.grdimage('-Cpal.cpt -E100i', grid)
+c = fig.grd2cpt('-Chot', grid, output=None)
+fig.grdimage('-E100i', grid, cpt=c)
 fig.grdcontour('-Wthick,black -C0.2', grid)
 fig.psxy('-Sp.1c', [lons,lats,vals])
 

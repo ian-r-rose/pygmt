@@ -80,6 +80,13 @@ class GMT_Session:
   
         if ret == -1:
             raise GMT_Error("Problem calling module " + str(module))
+
+    def get_id(self, family, direction, data):
+        id = _api.gmt_get_id(self.session_ptr, family, direction, data)
+  
+        if id == -1:
+            raise GMT_Error("Problem getting id from data pointer")
+        return id
    
     def option(self, options):
          ret = _api.gmt_option(self.session_ptr, options)

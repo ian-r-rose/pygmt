@@ -17,6 +17,7 @@ static PyObject *gmt_destroy_data ( PyObject *self, PyObject *args);
 static PyObject *gmt_read_data ( PyObject *self, PyObject *args);
 static PyObject *gmt_write_data ( PyObject *self, PyObject *args);
 static PyObject *gmt_call_module ( PyObject *self, PyObject *args);
+static PyObject *gmt_get_id ( PyObject *self, PyObject *args);
 
 
 //Two basic functions that take a short python list and convert it to a
@@ -39,6 +40,7 @@ static PyMethodDef _apiMethods[] = {
     {"gmt_read_data", gmt_read_data, METH_VARARGS},
     {"gmt_write_data", gmt_write_data, METH_VARARGS},
     {"gmt_call_module", gmt_call_module, METH_VARARGS},
+    {"gmt_get_id", gmt_get_id, METH_VARARGS},
     {NULL, NULL}
 };
 
@@ -497,5 +499,41 @@ static PyObject *gmt_destroy_data ( PyObject *self, PyObject *args)
     ret = GMT_Destroy_Data(API, &ptr);
 
     return Py_BuildValue("i", ret);
+}
+
+static PyObject *gmt_get_id ( PyObject *self, PyObject *args)
+{
+    const char* name = NULL;
+    void* API = NULL; 
+    PyObject* capsule = NULL;
+    PyObject* py_ptr = NULL;
+    void* ptr;
+    unsigned int family =0, direction=0;
+    int id;
+
+    //Parse the argument list
+    if (!PyArg_ParseTuple(args, "OIIO", &capsule, &family, &direction, &py_ptr)) return NULL;
+    if (!PyCapsule_CheckExact(capsule)) return NULL;
+
+    //Get the GMT session pointer from the capsule object
+    name = PyCapsule_GetName(capsule);
+    if (!PyCapsule_IsValid(capsule, name)) return NULL;
+    API = PyCapsule_GetPointer(capsule, name);
+    if (!API ) return NULL;
+
+    //Get the pointer from py_ptr
+    if (py_ptr == Py_None) return NULL; 
+    else if (PyCapsule_CheckExact(py_ptr))
+    {
+        const char *tmp = NULL;
+        tmp = PyCapsule_GetName(py_ptr);
+        if (!PyCapsule_IsValid(py_ptr, tmp)) return NULL;
+        ptr =  PyCapsule_GetPointer(py_ptr, name);
+    }
+    else return NULL;
+    
+    id = GMT_Get_ID(API, family, direction, ptr);
+
+    return Py_BuildValue("i", id);
 }
 

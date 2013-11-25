@@ -120,7 +120,7 @@ class GMT_Vector:
         if not tmp_arrays:
             self.array_list = arrays
         else:
-            self.array_list = arrays
+            self.array_list = tmp_arrays
 
         par = [len(self.array_list),len(self.array_list[0])]
         self.ptr = self._session.create_data( io_family['vector'], io_geometry['point'],\

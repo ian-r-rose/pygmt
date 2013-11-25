@@ -2,6 +2,7 @@ import api
 import gmt_grid
 import gmt_text
 import gmt_data
+import gmt_cpt
 from flags import *
 import numpy as np
 from figure_base import GMT_Figure_base
@@ -88,7 +89,7 @@ class GMT_Figure(GMT_Figure_base):
         self._print_call('grdcontour '+module_options)
         self._gmt_session.call_module('grdcontour', module_options)
 
-    def grdimage(self,options, input):
+    def grdimage(self,options, input, cpt=None):
         '''
         Call the GMT pscontour module with the text string "options"
         '''
@@ -96,6 +97,10 @@ class GMT_Figure(GMT_Figure_base):
         g.register_input(input)
 
         module_options = ' '.join([g.in_str,  options, self.autopilot_options])
+        if cpt != None:
+            c = gmt_cpt.GMT_CPT(self._gmt_session)
+            c.register_input(cpt)
+            module_options = module_options + ' ' + c.in_str
         self._print_call('grdimage '+module_options)
         self._gmt_session.call_module('grdimage', module_options)
 
@@ -146,7 +151,7 @@ class GMT_Figure(GMT_Figure_base):
         self._print_call('pstext '+module_options)
         self._gmt_session.call_module('pstext', module_options)
 
-    def psxy(self, options, input):
+    def psxy(self, options, input, cpt=None):
         '''
         Call the GMT psxy module with the text string "options" and the input "input"
         options is a text string of the flags to be given to psxy.
@@ -154,6 +159,12 @@ class GMT_Figure(GMT_Figure_base):
         d = gmt_data.GMT_Dataset(self._gmt_session)
         d.register_input(input)
         module_options = ' '.join([d.in_str,  options, self.autopilot_options])
+
+        if cpt != None:
+            c = gmt_cpt.GMT_CPT(self._gmt_session)
+            c.register_input(cpt)
+            module_options = module_options + ' ' + c.in_str
+
         self._print_call('psxy '+module_options)
         self._gmt_session.call_module('psxy', module_options)
 
@@ -199,13 +210,26 @@ class GMT_Figure(GMT_Figure_base):
 
 
     ### All the GMT modules that do text or data operations without plotting
-    def grd2cpt(self, options, input, outfile):
+    def grd2cpt(self, options, input, output = None):
         g = gmt_grid.GMT_Grid(self._gmt_session)
         g.register_input(input)
-        cpt_output = '->'+outfile
-        module_options = ' '.join([g.in_str, options, cpt_output])
+        c = gmt_cpt.GMT_CPT(self._gmt_session)
+        c.register_output(output)
+
+        module_options = ' '.join([g.in_str, options, c.out_str])
         self._print_call('grd2cpt '+module_options)
         self._gmt_session.call_module('grd2cpt', module_options)
+        return c
+
+    def makecpt(self, options, output = None):
+        c = gmt_cpt.GMT_CPT(self._gmt_session)
+        c.register_output(output)
+
+        module_options = ' '.join([options, c.out_str])
+        self._print_call('makecpt '+module_options)
+        self._gmt_session.call_module('makecpt', module_options)
+
+        return c
   
     def gmtconvert(self, options, input, output=None):
         d = gmt_data.GMT_Dataset(self._gmt_session)
@@ -218,11 +242,6 @@ class GMT_Figure(GMT_Figure_base):
         return d
 
  
-    def makecpt(self, options, outfile):
-        cpt_output = '->'+outfile
-        module_options = ' '.join([options, cpt_output])
-        self._print_call('makecpt '+module_options)
-        self._gmt_session.call_module('makecpt', module_options)
 
     def blockmean(self, options, input):
         d = gmt_data.GMT_Dataset(self._gmt_session)
