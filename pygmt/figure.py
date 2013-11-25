@@ -51,7 +51,7 @@ class GMT_Figure(GMT_Figure_base):
         return g2
         
         
-    def grdinfo(self, options, input, output=None):
+    def grdinfo(self, options, input):
         g = gmt_grid.GMT_Grid(self._gmt_session)
         g.register_input(input)
 
@@ -243,36 +243,42 @@ class GMT_Figure(GMT_Figure_base):
 
  
 
-    def blockmean(self, options, input):
-        d = gmt_data.GMT_Dataset(self._gmt_session)
-        d.register_input( input )
-        d.register_output()
+    def blockmean(self, options, input, output=None):
+        d1 = gmt_data.GMT_Dataset(self._gmt_session)
+        d1.register_input( input )
 
-        module_options = ' '.join([d.in_str, options, d.out_str])
+        d2 = gmt_data.GMT_Dataset(self._gmt_session)
+        d2.register_output(output)
+
+        module_options = ' '.join([d1.in_str, options, d2.out_str])
         self._print_call('blockmean '+module_options)
         self._gmt_session.call_module('blockmean', module_options)
-        return d
-         
-    def blockmedian(self, options, input):
-        d = gmt_data.GMT_Dataset(self._gmt_session)
-        d.register_input( input )
-        d.register_output()
+        return d2
 
-        module_options = ' '.join([d.in_str, options, d.out_str])
+    def blockmedian(self, options, input, output=None):
+        d1 = gmt_data.GMT_Dataset(self._gmt_session)
+        d1.register_input( input )
+
+        d2 = gmt_data.GMT_Dataset(self._gmt_session)
+        d2.register_output(output)
+
+        module_options = ' '.join([d1.in_str, options, d2.out_str])
         self._print_call('blockmedian '+module_options)
         self._gmt_session.call_module('blockmedian', module_options)
-        return d
-       
-    def blockmode(self, options, input):
-        d = gmt_data.GMT_Dataset(self._gmt_session)
-        d.register_input( input )
-        d.register_output()
+        return d2
 
-        module_options = ' '.join([d.in_str, options, d.out_str])
+    def blockmode(self, options, input, output=None):
+        d1 = gmt_data.GMT_Dataset(self._gmt_session)
+        d1.register_input( input )
+
+        d2 = gmt_data.GMT_Dataset(self._gmt_session)
+        d2.register_output(output)
+
+        module_options = ' '.join([d1.in_str, options, d2.out_str])
         self._print_call('blockmode '+module_options)
         self._gmt_session.call_module('blockmode', module_options)
-        return d       
-
+        return d2
+         
     def triangulate(self, options, input):
         d = gmt_data.GMT_Dataset(self._gmt_session)
         d.register_input( input )
@@ -283,15 +289,17 @@ class GMT_Figure(GMT_Figure_base):
         self._gmt_session.call_module('triangulate', module_options)
         return d
          
-    def project(self,options, input):
-        d = gmt_data.GMT_Dataset(self._gmt_session)
-        d.register_input( input )
-        d.register_output()
+    def project(self,options, input, output=None):
+        d1 = gmt_data.GMT_Dataset(self._gmt_session)
+        d1.register_input( input )
 
-        module_options = ' '.join([d.in_str, options, d.out_str])
+        d2 = gmt_data.GMT_Dataset(self._gmt_session)
+        d2.register_output()
+
+        module_options = ' '.join([d1.in_str, options, d2.out_str])
         self._print_call('project '+module_options)
         self._gmt_session.call_module('project', module_options)
-        return d
+        return d2
 
     def fitcircle(self,options, input, output=None):
         d = gmt_data.GMT_Dataset(self._gmt_session)
@@ -304,6 +312,4 @@ class GMT_Figure(GMT_Figure_base):
         self._print_call('fitcircle '+module_options)
         self._gmt_session.call_module('fitcircle', module_options)
         return t
-
-    
 
