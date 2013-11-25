@@ -25,7 +25,7 @@ class GMT_Grid( gmt_base_types.GMT_Resource ):
                 data = self._session.retrieve_data(self.out_id)
                 self.in_id = self._session.register_io(io_family['grid'], io_method['reference'],\
                                                        io_geometry['surface'], io_direction['in'], None, data)
-                self.in_str = '-<'+self._session.encode_id(self.in_id)
+                self.in_str = self._session.encode_id(self.in_id)
 
         elif isinstance(input, GMT_Grid):
             if input.direction == io_direction['out'] and input.out_id == -1:
@@ -39,7 +39,7 @@ class GMT_Grid( gmt_base_types.GMT_Resource ):
                 data = self._session.retrieve_data(input.out_id)
                 self.in_id = self._session.register_io(io_family['grid'], io_method['reference'],\
                                                        io_geometry['surface'], io_direction['in'], None, data)
-                self.in_str = '-<'+self._session.encode_id(self.in_id)
+                self.in_str = self._session.encode_id(self.in_id)
             
 
         elif isinstance(input, str) == True:
@@ -48,7 +48,7 @@ class GMT_Grid( gmt_base_types.GMT_Resource ):
                                               None, input, None)
             self.in_id = self._session.register_io(io_family['grid'], io_method['reference'],\
                                                io_geometry['surface'], io_direction['in'], None, ptr)
-            self.in_str = '-<'+self._session.encode_id(self.in_id)
+            self.in_str = self._session.encode_id(self.in_id)
 
         else:
             raise api.GMT_Error("Grid input format not supported")

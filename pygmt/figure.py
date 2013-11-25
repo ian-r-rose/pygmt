@@ -89,7 +89,7 @@ class GMT_Figure(GMT_Figure_base):
         self._print_call('grdcontour '+module_options)
         self._gmt_session.call_module('grdcontour', module_options)
 
-    def grdimage(self,options, input, cpt=None):
+    def grdimage(self,options, input, cpt=None, intensity=None):
         '''
         Call the GMT pscontour module with the text string "options"
         '''
@@ -97,6 +97,10 @@ class GMT_Figure(GMT_Figure_base):
         g.register_input(input)
 
         module_options = ' '.join([g.in_str,  options, self.autopilot_options])
+        if intensity != None:
+            g = gmt_grid.GMT_Grid(self._gmt_session)
+            g.register_input(intensity)
+            module_options = module_options + ' -I' + g.in_str
         if cpt != None:
             c = gmt_cpt.GMT_CPT(self._gmt_session)
             c.register_input(cpt)
@@ -132,8 +136,12 @@ class GMT_Figure(GMT_Figure_base):
         self._print_call('psbasemap '+module_options)
         self._gmt_session.call_module('psbasemap', module_options)
 
-    def psscale(self, options):
+    def psscale(self, options, cpt=None):
         module_options = ' '.join([options, self.autopilot_options])
+        if cpt != None:
+            c = gmt_cpt.GMT_CPT(self._gmt_session)
+            c.register_input(cpt)
+            module_options = module_options + ' ' + c.in_str
         self._print_call('psscale '+module_options)
         self._gmt_session.call_module('psscale', module_options)
     
