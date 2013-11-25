@@ -1,6 +1,7 @@
 We cannot register a grd file and then pass it to a GMT_Module, because it
 mistakenly passes the GMT_File_Is_Memory check in GMT_Register_IO.  It then
-looks in memory, but cannot find it, because it is, after all, a file.
+looks in memory, but cannot find it, because it is, after all, a file.  Same
+thing for cpt files
 
 grdcontour segfaults when there are tic-marks and the contours are not closed.
 
@@ -8,3 +9,6 @@ GMT_Create_Options fails for titles in the -B option because it parses quoted
 titles with spaces in it into separate tokens.  When these titles are passed
 in through the command line, whatever service that parses that into argc, argv
 correctly arguments in quotes together.
+
+GMTAPI_Make_DataObject does not set the S_obj->actual_family field, which can
+cause segfaults in GMT_End_IO, which needs to look at that field.
