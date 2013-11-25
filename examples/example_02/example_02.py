@@ -1,6 +1,6 @@
 import pygmt
 
-fig = pygmt.GMT_Figure("example_02.ps", figure_range='160/20/220/30r', projection='Oc190/25.5/292/69/4.5i -P', verbosity=1, autopilot=True)
+fig = pygmt.GMT_Figure("example_02.ps", figure_range='160/20/220/30r', projection='Oc190/25.5/292/69/4.5i', verbosity=0, autopilot=True, portrait=True)
 fig.gmtset('FONT_TITLE 30p MAP_ANNOT_OBLIQUE 0')
 g = fig.makecpt('-Crainbow -T-2/14/2')
 fig.grdimage('-E50 -B10 -X1.0i -Y1.25i', input = 'HI_geoid2.nc', cpt=g)
