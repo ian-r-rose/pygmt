@@ -279,16 +279,6 @@ class GMT_Figure(GMT_Figure_base):
         self._gmt_session.call_module('blockmode', module_options)
         return d2
          
-    def triangulate(self, options, input):
-        d = gmt_data.GMT_Dataset(self._gmt_session)
-        d.register_input( input )
-        d.register_output()
-
-        module_options = ' '.join([d.in_str, options, d.out_str])
-        self._print_call('triangulate '+module_options)
-        self._gmt_session.call_module('triangulate', module_options)
-        return d
-         
     def project(self,options, input, output=None):
         d1 = gmt_data.GMT_Dataset(self._gmt_session)
         d1.register_input( input )
